@@ -1,12 +1,13 @@
 ﻿namespace mikroblog.fast_quality_check
 {
-    class Manager
+    public class Manager
     {
         private static readonly DiscussionDownloader _downloader = new();
         private static readonly DiscussionRatingReader _ratingReader = new();
         private static readonly QualityCheck _qualityCheck = new();
 
-        private static readonly Config _qualityDiscussions = new("QualityDiscussions");
+        public const string QUALITY_DISCUSSIONS_FILE_NAME = "QualityDiscussions";
+        private static readonly Config _qualityDiscussions = new(QUALITY_DISCUSSIONS_FILE_NAME);
 
         /// <summary>
         /// Gets the input data from user and checks discussions in the given range.

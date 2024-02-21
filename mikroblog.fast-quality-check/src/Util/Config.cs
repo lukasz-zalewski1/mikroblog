@@ -2,7 +2,7 @@
 
 namespace mikroblog.fast_quality_check
 {
-    class Config
+    public class Config
     {
         public static readonly string CONFIGS_PATH = Path.Combine(Util.WORKPLACE_PATH, "configs");
 
@@ -27,7 +27,7 @@ namespace mikroblog.fast_quality_check
         /// <summary>
         /// Reads config values from a config file.
         /// </summary>
-        public void Read() 
+        private void Read() 
         {
             Log.Write($"Trying to read config - {_path}");
 
