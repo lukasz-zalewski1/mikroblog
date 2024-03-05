@@ -1,0 +1,23 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Name="_window" x:Class="mikroblog.videos_designer.VideosDesignerWindow"
+        mc:Ignorable="d"
+        Title="Mikroblog Videos Designer" Width="1920" Height="1080" WindowStyle="None" WindowState="Maximized">
+    <Viewbox Stretch="Fill">
+        <Grid x:Name="_grid" Width="1920" Height="1080">
+            <Wpf:WebView2 Name="_webView" HorizontalAlignment="Left" Height="1080" VerticalAlignment="Center" Width="960" Margin="960,0,0,0"/>
+            <Label x:Name="_labelDiscussionId" Content="Discussion Id: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="50" FontSize="24" Margin="0,0,0,0"/>
+            <Label x:Name="_labelDiscussionNumber" Content="Discussion: x / y" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="50" FontSize="24" Margin="0,50,0,0"/>
+            <Label x:Name="_labelDiscussionQuality" Content="Quality: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" Height="50" FontSize="24" Margin="0,100,0,0"/>
+            <Button x:Name="_buttonPreviousDiscussion" Content="Previous" HorizontalAlignment="Left" Margin="400,0,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonPreviousDiscussion_Click"/>
+            <Button x:Name="_buttonNextDiscussion" Content="Next" HorizontalAlignment="Left" Margin="600,0,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonNextDiscussion_Click"/>
+            <Button x:Name="_buttonDropDiscussion" Content="Drop Discussion" HorizontalAlignment="Left" Margin="500,75,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonDropDiscussion_Click"/>
+            <Button x:Name="_buttonTextEditMode" Content="Enable Text Edit Mode" HorizontalAlignment="Left" Margin="0,242,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonTextEditMode_Click" />
+            <Button x:Name="_buttonDesigner" Content="Enable Designer Mode" HorizontalAlignment="Left" Margin="0,335,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonDesigner_Click" />
+            <Button x:Name="_buttonScreenshot" Content="Screenshot" HorizontalAlignment="Left" Margin="409,451,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonScreenshot_Click" />
+        </Grid>
+    </Viewbox>
+</Window>

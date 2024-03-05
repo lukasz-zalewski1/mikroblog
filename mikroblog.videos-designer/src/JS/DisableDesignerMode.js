@@ -1,0 +1,1 @@
+﻿document.removeEventListener('click', document.fnDesignerMode);

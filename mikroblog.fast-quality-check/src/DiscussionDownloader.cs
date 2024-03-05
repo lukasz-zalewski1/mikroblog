@@ -1,8 +1,8 @@
 ﻿namespace mikroblog.fast_quality_check
 {
-    class DiscussionDownloader
+    public class DiscussionDownloader
     {
-        private const string DISCUSSION_NAME_TEMPLATE = @"https://wykop.pl/wpis/";
+        public const string DISCUSSION_NAME_TEMPLATE = @"https://wykop.pl/wpis/";
 
         private readonly HttpClient _httpClient = new();
 

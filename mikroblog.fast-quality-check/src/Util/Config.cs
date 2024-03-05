@@ -6,11 +6,12 @@ namespace mikroblog.fast_quality_check
     {
         public static readonly string CONFIGS_PATH = Path.Combine(Util.WORKPLACE_PATH, "configs");
 
-        private string _path;
+        private readonly string _path;
 
         private const char KEY_VALUE_SEPARATOR = '=';
 
         private Dictionary<string, string>? _config = null;
+        public Dictionary<string, string>? Lines { get => _config; }
 
         /// <summary>
         /// Initializes config's path and tries to read it. It doesn't have to exist yet.
@@ -197,8 +198,7 @@ namespace mikroblog.fast_quality_check
         /// </summary>
         public void Add(string key, string value)
         {
-            if (_config == null)
-                _config = new Dictionary<string, string>();
+            _config ??= new Dictionary<string, string>();
 
             _config[key] = value;
 
