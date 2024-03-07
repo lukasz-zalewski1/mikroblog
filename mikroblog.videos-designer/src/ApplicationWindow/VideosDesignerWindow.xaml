@@ -17,7 +17,9 @@
             <Button x:Name="_buttonDropDiscussion" Content="Drop Discussion" HorizontalAlignment="Left" Margin="500,75,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonDropDiscussion_Click"/>
             <Button x:Name="_buttonTextEditMode" Content="Enable Text Edit Mode" HorizontalAlignment="Left" Margin="0,242,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonTextEditMode_Click" />
             <Button x:Name="_buttonDesigner" Content="Enable Designer Mode" HorizontalAlignment="Left" Margin="0,335,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonDesigner_Click" />
-            <Button x:Name="_buttonScreenshot" Content="Screenshot" HorizontalAlignment="Left" Margin="409,451,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonScreenshot_Click" />
+            <ListBox x:Name="_listboxEntries" Margin="0,407,1647,0"/>
+            <Button x:Name="_buttonScreenshot" Content="Screenshot" HorizontalAlignment="Left" Margin="278,470,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonScreenshot_Click" />
+            <Button x:Name="_buttonSpeak" Content="Speak" HorizontalAlignment="Left" Margin="278,540,0,0" VerticalAlignment="Top" Height="40" Width="200" FontSize="16" Click="_buttonSpeak_Click" />
         </Grid>
     </Viewbox>
 </Window>

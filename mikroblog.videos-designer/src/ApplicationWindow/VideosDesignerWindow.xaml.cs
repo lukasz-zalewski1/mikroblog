@@ -1,34 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 
-using mikroblog.fast_quality_check;
 using Microsoft.Web.WebView2.Core;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using System.Drawing;
-using System.Drawing.Imaging;
 
+using mikroblog.fast_quality_check;
+
+#pragma warning disable CS8602 
+#pragma warning disable CS8604
 namespace mikroblog.videos_designer
 {
     public partial class VideosDesignerWindow : Window
     {
-        public enum StateType
+        private enum StateType
         {
             None,
             TextEdit,
             Designer
         }
 
-        private readonly VideosDesignerManager _manager = new();
+        private readonly Config _configQualityDiscussions = new(Manager.QUALITY_DISCUSSIONS_FILE_NAME);
 
-        private const string RESOURCE_NAME_JS_ENABLE_EDIT_MODE = "mikroblog.videos_designer.src.JS.EnableEditMode.js";
-        private const string RESOURCE_NAME_JS_DISABLE_EDIT_MODE = "mikroblog.videos_designer.src.JS.DisableEditMode.js";
-        private const string RESOURCE_NAME_JS_ENABLE_DESIGNER_MODE = "mikroblog.videos_designer.src.JS.EnableDesignerMode.js";
-        private const string RESOURCE_NAME_JS_DISABLE_DESIGNER_MODE = "mikroblog.videos_designer.src.JS.DisableDesignerMode.js";
-        private const string RESOURCE_NAME_JS_CLEAN_DESIGNER_ENTRIES = "mikroblog.videos_designer.src.JS.CleanDesignerEntries.js";
+        private int _currentDiscussion;
+        private int DiscussionsCount { get => _configQualityDiscussions.Lines != null ? _configQualityDiscussions.Lines.Count : 0; }
+
+        private const string RESOURCE_NAME_JS_EDIT_MODE = "mikroblog.videos_designer.src.JS.EditMode.js";
+        private const string RESOURCE_NAME_JS_DESIGNER_MODE = "mikroblog.videos_designer.src.JS.DesignerMode.js";
 
         private StateType _state;
 
@@ -36,13 +39,11 @@ namespace mikroblog.videos_designer
         {
             InitializeComponent();
 
-            InitializeEvents();
-
             InitializeControls();
 
+            InitializeEvents();
+           
             InitializeMikroblogBrowser();
-
-            
         }
 
         #region Controls
@@ -53,11 +54,6 @@ namespace mikroblog.videos_designer
 
         private void UpdateControls()
         {
-            UpdateLabelsContent();
-        }
- 
-        private void UpdateLabelsContent()
-        {
             UpdateLabelDiscussionId();
             UpdateLabelDiscussionNumber();
             UpdateLabelDiscussionQuality();
@@ -65,21 +61,21 @@ namespace mikroblog.videos_designer
 
         private void UpdateLabelDiscussionId()
         {
-            _labelDiscussionId.Content = $"Discussion Id: {_manager.GetCurrentDiscussionId()}";
+            _labelDiscussionId.Content = $"Discussion Id: {GetCurrentDiscussionId()}";
         }
-
+    
         private void UpdateLabelDiscussionNumber()
         {
-            _labelDiscussionNumber.Content = $"Discussion: {_manager.CurrentDiscussion + 1} / {_manager.DiscussionsCount}";
+            _labelDiscussionNumber.Content = $"Discussion: {_currentDiscussion + 1} / {DiscussionsCount}";
         }
 
         private void UpdateLabelDiscussionQuality()
         {
-            _labelDiscussionQuality.Content = $"Quality: {_manager.GetCurrentDiscussionRating()}";
+            _labelDiscussionQuality.Content = $"Quality: {GetCurrentDiscussionRating()}";
         }
         #endregion Controls
 
-        #region Events        
+        #region Window Events        
         private void InitializeEvents()
         {
             _window.KeyDown += OnKeyDown;
@@ -93,82 +89,12 @@ namespace mikroblog.videos_designer
                 _window.Close();
         }
 
-        private void InitializeWebViewEvents()
-        {
-            _webView.WebMessageReceived += _webView_WebMessageReceived;
-        }
-
-        private void _webView_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
-        {         
-            try
-            {
-                var json = JsonSerializer.Deserialize<List<JsonObject>>(e.WebMessageAsJson);
-
-                if (json == null)
-                    return;
-           
-                ParseJsonMessage(json);
-            }
-            catch (Exception ex)
-            {
-                Log.WriteError($"Error when deserializing json, Exception - {ex.Message}");
-            }
-        }
-
-        private void ParseJsonMessage(List<JsonObject> json)
-        {
-            _manager.Entries = new();
-
-            foreach (var entryJson in json)
-            {
-                if (entryJson["x"] == null || entryJson["y"] == null || entryJson["width"] == null || entryJson["height"] == null || entryJson["text"] == null)
-                {
-                    Log.WriteError("One of the entry properties wasn't found in the json message.");
-                    return;
-                }
-
-                VideosDesignerManager.Entry entry = new();
-
-#pragma warning disable CS8604 // Possible null reference argument.
-                if (!TryGetIntValueFromJson(entryJson["x"], out entry.X) ||
-                    !TryGetIntValueFromJson(entryJson["y"], out entry.Y) ||
-                    !TryGetIntValueFromJson(entryJson["width"], out entry.Width) ||
-                    !TryGetIntValueFromJson(entryJson["height"], out entry.Height))
-                {
-                    Log.WriteError("One of the entry json properties has an invalid value.");
-                    return;
-                }
-
-                entry.Text = GetStringValueFromJson(entryJson["text"]);
-#pragma warning restore CS8604 // Possible null reference argument.
-
-                _manager.Entries.Add(entry);
-            }
-        }
-
-        private bool TryGetIntValueFromJson(JsonNode json, out int value)
-        {
-            if (int.TryParse(json.ToString(), out value))
-                return true;
-
-            if (float.TryParse(json.ToString(), out float floatValue))
-            {
-                value = Convert.ToInt32(floatValue);
-                return true;
-            }
-
-            return false;
-        }
-
-        private string GetStringValueFromJson(JsonNode json)
-        {
-            return json.ToString();
-        }
-
         private void _buttonPreviousDiscussion_Click(object sender, RoutedEventArgs e)
         {
-            _manager.PreviousDiscussion();
-            OpenDiscussion(_manager.GetCurrentDiscussionId());
+            if (_currentDiscussion > 0)
+                _currentDiscussion -= 1;
+
+            OpenDiscussion(GetCurrentDiscussionId());
 
             CleanupModesChanges();
 
@@ -177,8 +103,10 @@ namespace mikroblog.videos_designer
 
         private void _buttonNextDiscussion_Click(object sender, RoutedEventArgs e)
         {
-            _manager.NextDiscussion();
-            OpenDiscussion(_manager.GetCurrentDiscussionId());
+            if (_currentDiscussion + 1 < DiscussionsCount)
+                _currentDiscussion += 1;
+
+            OpenDiscussion(GetCurrentDiscussionId());
 
             CleanupModesChanges();
 
@@ -194,9 +122,16 @@ namespace mikroblog.videos_designer
 
         private void _buttonDropDiscussion_Click(object sender, RoutedEventArgs e)
         {
-            _manager.DropDiscussion();
+            var currentDiscussionId = GetCurrentDiscussionId();
+            if (currentDiscussionId != null)
+            {
+                _configQualityDiscussions.Remove(currentDiscussionId);
 
-            var currentDiscussionId = _manager.GetCurrentDiscussionId();
+                if (_currentDiscussion >= DiscussionsCount)
+                    _currentDiscussion -= 1;
+            }
+
+            currentDiscussionId = GetCurrentDiscussionId();
             if (currentDiscussionId == null)
             {
                 OpenEmptyPage();
@@ -222,17 +157,165 @@ namespace mikroblog.videos_designer
             else
                 DisableDesignerMode();
         }
-        #endregion Events
 
+        private void _buttonScreenshot_Click(object sender, RoutedEventArgs e)
+        {
+            int entryNumber = int.Parse((string)_listboxEntries.SelectedItem) - 1;
+
+            JS.ExecuteJSFunction(_webView, "hideEntryNumberNode", entryNumber.ToString());
+            JS.ExecuteJSFunction(_webView, "sendScreenshotData", entryNumber.ToString());
+            JS.ExecuteJSFunction(_webView, "showEntryNumberNode", entryNumber.ToString());
+        }
+
+        private void _buttonSpeak_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO IMPLEMENT SCROLLING SO ALL SCREENSHOTS CAN BE TAKEN AT ONCE
+            for (int i = 0; i < _listboxEntries.Items.Count; i++)
+            {
+                JS.ExecuteJSFunction(_webView, "hideEntryNumberNode", i.ToString());
+                JS.ExecuteJSFunction(_webView, "sendScreenshotData", i.ToString());
+                JS.ExecuteJSFunction(_webView, "showEntryNumberNode", i.ToString());
+            }
+        }
+        #endregion Window Events
+
+        #region WebView Events
+        private void InitializeWebViewEvents()
+        {
+            _webView.WebMessageReceived += _webView_WebMessageReceived;
+        }
+
+        private void _webView_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
+        {         
+            try
+            {
+                var json = JsonSerializer.Deserialize<JsonObject>(e.WebMessageAsJson);
+
+                if (json == null)
+                    return;
+           
+                ParseJsonMessage(json);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError($"Error when deserializing json, Exception - {ex.Message}");
+            }
+        }
+        #endregion WebView Events
+
+        #region JS
+        private void ParseJsonMessage(JsonObject json)
+        {
+            if (json["message"] == null)
+            {
+                Log.WriteError("Incorrect json message");
+                return;
+            }
+
+            switch (json["message"].ToString())
+            {
+                case "EntriesLength":
+                    JsonMessageEntriesLength(json);
+                    break;
+                case "ScreenshotData":
+                    JsonMessageScreenshot(json);
+                    break;
+            }
+        }
+
+        private void JsonMessageEntriesLength(JsonObject json)
+        {
+            var valueJson = json["value"];
+
+            if (valueJson == null)
+            {
+                Log.WriteError($"Json {json["message"]} missing parameter");
+                return;
+            }
+
+            if (!JS.TryGetIntFromJsonNode(valueJson, out int value))
+            {
+                Log.WriteError($"Json parameter value is not an int");
+                return;
+            }
+
+            _listboxEntries.Items.Clear();
+            for (int i = 0; i < value; ++i)
+            {
+                _listboxEntries.Items.Add((i + 1).ToString());
+            }
+        }
+
+        private void JsonMessageScreenshot(JsonObject json)
+        {           
+            if (!ValidateScreenshotData(json, out Rectangle rect, out int entryNumber))
+                return;
+
+            Screenshot(entryNumber, CalculateActualScreenshotRectangle(rect));
+        }
+
+        private bool ValidateScreenshotData(JsonObject json, out Rectangle rect, out int entryNumber)
+        {
+            rect = new();
+            entryNumber = -1;
+
+            if (json["entryNumber"] == null || json["x"] == null || json["y"] == null || json["width"] == null || json["height"] == null)
+            {
+                Log.WriteError("Invalid screenshot data");
+                return false;
+            }
+
+            if (!JS.TryGetIntFromJsonNode(json["entryNumber"], out entryNumber) || 
+                !JS.TryGetIntFromJsonNode(json["x"], out int x) ||
+                !JS.TryGetIntFromJsonNode(json["y"], out int y) ||
+                !JS.TryGetIntFromJsonNode(json["width"], out int width) ||
+                !JS.TryGetIntFromJsonNode(json["height"], out int height)
+                )
+            {
+                Log.WriteError("Invalid screenshot data");
+                return false;
+            }
+
+            rect = new(x, y, width, height);
+            return true;
+        }
+
+        private Rectangle CalculateActualScreenshotRectangle(Rectangle rect)
+        {
+            double displayScaling = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice.M11;
+
+            rect.X = (int)(rect.X * displayScaling);
+            rect.X += (int)_webView.Width;
+            rect.Y = (int)(rect.Y * displayScaling);
+            rect.Width = (int)(rect.Width * displayScaling);
+            rect.Height = (int)(rect.Height * displayScaling);
+
+            return rect;
+        }
+
+        private void Screenshot(int entryNumber, Rectangle rect)
+        {
+            Bitmap bitmap = new(rect.Width, rect.Height);
+            Graphics graphics = Graphics.FromImage(bitmap);
+
+            graphics.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size(rect.Width, rect.Height));
+
+            bitmap.Save($"c:\\users\\lza\\desktop\\workplace\\test\\{entryNumber}.png", ImageFormat.Png);
+        }
+        #endregion JS
+
+        #region Modes
         private void EnableTextEditMode()
         {
+            JS.ExecuteJSScript(_webView, RESOURCE_NAME_JS_EDIT_MODE);
+
             if (_state == StateType.Designer)
                 DisableDesignerMode();
 
             _state = StateType.TextEdit;
             _buttonTextEditMode.Content = "Disable Text Edit Mode";
 
-            ExecuteJSScript(RESOURCE_NAME_JS_ENABLE_EDIT_MODE);
+            JS.ExecuteJSFunction(_webView, "enableEditMode");
         }
 
         private void DisableTextEditMode()
@@ -240,18 +323,20 @@ namespace mikroblog.videos_designer
             _state = StateType.None;
             _buttonTextEditMode.Content = "Enable Text Edit Mode";
 
-            ExecuteJSScript(RESOURCE_NAME_JS_DISABLE_EDIT_MODE);
+            JS.ExecuteJSFunction(_webView, "disableEditMode");
         }
 
         private void EnableDesignerMode()
         {
+            JS.ExecuteJSScript(_webView, RESOURCE_NAME_JS_DESIGNER_MODE);
+
             if (_state == StateType.TextEdit)
                 DisableTextEditMode();
 
             _state = StateType.Designer;
             _buttonDesigner.Content = "Disable Designer Mode";
 
-            ExecuteJSScript(RESOURCE_NAME_JS_ENABLE_DESIGNER_MODE);
+            JS.ExecuteJSFunction(_webView, "enableDesignerMode");
         }
 
         private void DisableDesignerMode()
@@ -259,37 +344,19 @@ namespace mikroblog.videos_designer
             _state = StateType.None;
             _buttonDesigner.Content = "Enable Designer Mode";
 
-            ExecuteJSScript(RESOURCE_NAME_JS_DISABLE_DESIGNER_MODE);
+            JS.ExecuteJSFunction(_webView, "disableDesignerMode");
         }
 
         private void CleanDesignerEntries()
         {
-            ExecuteJSScript(RESOURCE_NAME_JS_CLEAN_DESIGNER_ENTRIES);
+            JS.ExecuteJSFunction(_webView, "cleanEntries");
         }
-
-        private void _buttonScreenshot_Click(object sender, RoutedEventArgs e)
-        {
-            Bitmap bmp = new Bitmap(926, 440);
-            Graphics g = Graphics.FromImage(bmp);
-            g.CopyFromScreen(966, 549, 0, 0, new System.Drawing.Size(926, 440));
-            bmp.Save(@"c:\users\lza\desktop\workplace\test\image.png", ImageFormat.Png);
-        }
-
-        #region WebView Events
-        private async void ExecuteJSScript(string name)
-        {
-            string? script = Util.GetResource(name);
-            if (script == null)
-                return;
-
-            await _webView.CoreWebView2.ExecuteScriptAsync(script);
-        }
-        #endregion WebView Events
+        #endregion Modes
 
         #region WebView
         private void InitializeMikroblogBrowser()
         {
-            OpenDiscussion(_manager.GetCurrentDiscussionId());
+            OpenDiscussion(GetCurrentDiscussionId());
         }
 
         private void OpenDiscussion(string? currentDiscussionId)
@@ -313,5 +380,33 @@ namespace mikroblog.videos_designer
             _webView.Source = new Uri("about:blank");
         }
         #endregion WebView
+
+        #region Discussions
+        private string? GetCurrentDiscussionId()
+        {
+            if (_configQualityDiscussions.Lines == null)
+            {
+                Log.WriteError("QualityDiscussions Config is null");
+                return null;
+            }
+
+            if (_configQualityDiscussions.Lines.Count == 0)
+                return null;
+
+            return _configQualityDiscussions.Lines.ElementAt(_currentDiscussion).Key;
+        }
+
+        private string? GetCurrentDiscussionRating()
+        {
+            var discussionId = GetCurrentDiscussionId();
+
+            if (discussionId == null)
+                return null;
+
+            return _configQualityDiscussions.GetString(discussionId);
+        }
+
+        #endregion Discussions
     }
 }
+#pragma warning restore CS8602

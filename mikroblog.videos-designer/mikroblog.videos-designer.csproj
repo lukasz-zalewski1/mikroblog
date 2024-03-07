@@ -10,11 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="src\JS\CleanDesignerEntries.js" />
-    <None Remove="src\JS\DisableDesignerMode.js" />
-    <None Remove="src\JS\DisableEditMode.js" />
-    <None Remove="src\JS\EnableDesignerMode.js" />
-    <None Remove="src\JS\EnableEditMode.js" />
+    <None Remove="src\JS\DesignerMode.js" />
+    <None Remove="src\JS\EditMode.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,14 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="src\JS\CleanDesignerEntries.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="src\JS\DisableDesignerMode.js" />
-    <EmbeddedResource Include="src\JS\DisableEditMode.js" />
-    <EmbeddedResource Include="src\JS\EnableDesignerMode.js" />
-    <EmbeddedResource Include="src\JS\EnableEditMode.js" />
+    <EmbeddedResource Include="src\JS\EditMode.js" />
+    <EmbeddedResource Include="src\JS\DesignerMode.js" />
   </ItemGroup>
 
   <ItemGroup>
