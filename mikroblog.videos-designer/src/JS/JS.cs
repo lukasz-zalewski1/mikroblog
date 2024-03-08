@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Nodes;
-
+using System.Threading.Tasks;
 using Microsoft.Web.WebView2.Wpf;
 
 namespace mikroblog.videos_designer
@@ -31,7 +31,7 @@ namespace mikroblog.videos_designer
             await webView.CoreWebView2.ExecuteScriptAsync(script);
         }
 
-        public static async void ExecuteJSFunction(WebView2 webView, string name, List<string> args)
+        public static async Task ExecuteJSFunction(WebView2 webView, string name, List<string> args)
         {
             string argString = string.Empty;
             for (int i = 0; i < args.Count; ++i)
@@ -44,12 +44,12 @@ namespace mikroblog.videos_designer
             await webView.CoreWebView2.ExecuteScriptAsync($"{name}({argString});");
         }
 
-        public static async void ExecuteJSFunction(WebView2 webView, string name, string arg)
+        public static async Task ExecuteJSFunction(WebView2 webView, string name, string arg)
         {
             await webView.CoreWebView2.ExecuteScriptAsync($"{name}({arg});");
         }
 
-        public static async void ExecuteJSFunction(WebView2 webView, string name)
+        public static async Task ExecuteJSFunction(WebView2 webView, string name)
         {
             await webView.CoreWebView2.ExecuteScriptAsync($"{name}();");
         }

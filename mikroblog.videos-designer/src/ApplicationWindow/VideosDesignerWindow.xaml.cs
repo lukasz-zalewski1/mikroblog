@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,7 +13,7 @@ using Microsoft.Web.WebView2.Core;
 
 using mikroblog.fast_quality_check;
 
-#pragma warning disable CS8602 
+#pragma warning disable CS8602
 #pragma warning disable CS8604
 namespace mikroblog.videos_designer
 {
@@ -33,7 +34,11 @@ namespace mikroblog.videos_designer
         private const string RESOURCE_NAME_JS_EDIT_MODE = "mikroblog.videos_designer.src.JS.EditMode.js";
         private const string RESOURCE_NAME_JS_DESIGNER_MODE = "mikroblog.videos_designer.src.JS.DesignerMode.js";
 
+        private const int SCREENSHOT_DELAY = 100;
+
         private StateType _state;
+
+        private TextToSpeech _speechService = new();
 
         public VideosDesignerWindow()
         {
@@ -158,24 +163,43 @@ namespace mikroblog.videos_designer
                 DisableDesignerMode();
         }
 
-        private void _buttonScreenshot_Click(object sender, RoutedEventArgs e)
+        private async void _buttonScreenshot_Click(object sender, RoutedEventArgs e)
         {
-            int entryNumber = int.Parse((string)_listboxEntries.SelectedItem) - 1;
+            if (_listboxEntries.SelectedItem == null)
+                return;
 
-            JS.ExecuteJSFunction(_webView, "hideEntryNumberNode", entryNumber.ToString());
-            JS.ExecuteJSFunction(_webView, "sendScreenshotData", entryNumber.ToString());
-            JS.ExecuteJSFunction(_webView, "showEntryNumberNode", entryNumber.ToString());
+            await RunScreenshotProcedure(int.Parse((string)_listboxEntries.SelectedItem) - 1);
         }
 
-        private void _buttonSpeak_Click(object sender, RoutedEventArgs e)
+        private async void _buttonScreenshotAll_Click(object sender, RoutedEventArgs e)
         {
-            // TODO IMPLEMENT SCROLLING SO ALL SCREENSHOTS CAN BE TAKEN AT ONCE
             for (int i = 0; i < _listboxEntries.Items.Count; i++)
             {
-                JS.ExecuteJSFunction(_webView, "hideEntryNumberNode", i.ToString());
-                JS.ExecuteJSFunction(_webView, "sendScreenshotData", i.ToString());
-                JS.ExecuteJSFunction(_webView, "showEntryNumberNode", i.ToString());
+                await RunScreenshotProcedure(i);
             }
+        }
+
+        private async Task RunScreenshotProcedure(int entryNumber)
+        {
+            await JS.ExecuteJSFunction(_webView, "hideEntryNumberNode", entryNumber.ToString());
+
+            Thread.Sleep(SCREENSHOT_DELAY);
+
+            await JS.ExecuteJSFunction(_webView, "sendScreenshotData", entryNumber.ToString());
+            await JS.ExecuteJSFunction(_webView, "showEntryNumberNode", entryNumber.ToString());
+        }
+
+        private async void _buttonSpeak_Click(object sender, RoutedEventArgs e)
+        {
+            if (_listboxEntries.SelectedItem == null)
+                return;
+
+            await RunSpeakProdecure(int.Parse((string)_listboxEntries.SelectedItem) - 1);
+        }
+
+        private async Task RunSpeakProdecure(int entryNumber)
+        {
+            await JS.ExecuteJSFunction(_webView, "sendSpeechData", entryNumber.ToString());
         }
         #endregion Window Events
 
@@ -186,14 +210,14 @@ namespace mikroblog.videos_designer
         }
 
         private void _webView_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
-        {         
+        {
             try
             {
                 var json = JsonSerializer.Deserialize<JsonObject>(e.WebMessageAsJson);
 
                 if (json == null)
                     return;
-           
+
                 ParseJsonMessage(json);
             }
             catch (Exception ex)
@@ -218,7 +242,10 @@ namespace mikroblog.videos_designer
                     JsonMessageEntriesLength(json);
                     break;
                 case "ScreenshotData":
-                    JsonMessageScreenshot(json);
+                    JsonMessageScreenshotData(json);
+                    break;
+                case "SpeechData":
+                    JsonMessageSpeechData(json);
                     break;
             }
         }
@@ -246,8 +273,8 @@ namespace mikroblog.videos_designer
             }
         }
 
-        private void JsonMessageScreenshot(JsonObject json)
-        {           
+        private void JsonMessageScreenshotData(JsonObject json)
+        {
             if (!ValidateScreenshotData(json, out Rectangle rect, out int entryNumber))
                 return;
 
@@ -277,6 +304,7 @@ namespace mikroblog.videos_designer
             }
 
             rect = new(x, y, width, height);
+
             return true;
         }
 
@@ -302,10 +330,52 @@ namespace mikroblog.videos_designer
 
             bitmap.Save($"c:\\users\\lza\\desktop\\workplace\\test\\{entryNumber}.png", ImageFormat.Png);
         }
+
+        private async void JsonMessageSpeechData(JsonObject json)
+        {
+            ValidateSpeechData(json, out string text, out int entryNumber);
+
+            await _speechService.GenerateAudioFile($"c:\\users\\lza\\desktop\\workplace\\test\\{entryNumber}.wav", PrepareTextForSpeech(text), true);
+        }
+
+        private bool ValidateSpeechData(JsonObject json, out string text, out int entryNumber)
+        {
+            text = string.Empty;
+            entryNumber = -1;
+
+            if (json["entryNumber"] == null || json["text"] == null)
+            {
+                Log.WriteError("Invalid speech data");
+                return false;
+            }
+
+            if (!JS.TryGetIntFromJsonNode(json["entryNumber"], out entryNumber))
+            {
+                Log.WriteError("Invalid speech data");
+                return false;
+            }
+
+            text = json["text"].ToString();
+
+            return true;
+        }
+
+        private string PrepareTextForSpeech(string text)
+        {
+            if (!text.Contains('@'))
+                return text;
+
+            while (text[0] == '@')
+            {
+                text = text.Substring(text.IndexOf(' ') + 1);
+            }
+
+            return text;
+        }
         #endregion JS
 
         #region Modes
-        private void EnableTextEditMode()
+        private async void EnableTextEditMode()
         {
             JS.ExecuteJSScript(_webView, RESOURCE_NAME_JS_EDIT_MODE);
 
@@ -315,18 +385,18 @@ namespace mikroblog.videos_designer
             _state = StateType.TextEdit;
             _buttonTextEditMode.Content = "Disable Text Edit Mode";
 
-            JS.ExecuteJSFunction(_webView, "enableEditMode");
+            await JS.ExecuteJSFunction(_webView, "enableEditMode");
         }
 
-        private void DisableTextEditMode()
+        private async void DisableTextEditMode()
         {
             _state = StateType.None;
             _buttonTextEditMode.Content = "Enable Text Edit Mode";
 
-            JS.ExecuteJSFunction(_webView, "disableEditMode");
+            await JS.ExecuteJSFunction(_webView, "disableEditMode");
         }
 
-        private void EnableDesignerMode()
+        private async void EnableDesignerMode()
         {
             JS.ExecuteJSScript(_webView, RESOURCE_NAME_JS_DESIGNER_MODE);
 
@@ -336,20 +406,21 @@ namespace mikroblog.videos_designer
             _state = StateType.Designer;
             _buttonDesigner.Content = "Disable Designer Mode";
 
-            JS.ExecuteJSFunction(_webView, "enableDesignerMode");
+            await JS.ExecuteJSFunction(_webView, "enableDesignerMode");
         }
 
-        private void DisableDesignerMode()
+        private async void DisableDesignerMode()
         {
             _state = StateType.None;
             _buttonDesigner.Content = "Enable Designer Mode";
 
-            JS.ExecuteJSFunction(_webView, "disableDesignerMode");
+            await JS.ExecuteJSFunction(_webView, "disableDesignerMode");
         }
 
-        private void CleanDesignerEntries()
+        private async void CleanDesignerEntries()
         {
-            JS.ExecuteJSFunction(_webView, "cleanEntries");
+            await JS.ExecuteJSFunction(_webView, "cleanEntries");
+            _listboxEntries.Items.Clear();
         }
         #endregion Modes
 

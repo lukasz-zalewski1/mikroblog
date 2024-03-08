@@ -1,6 +1,12 @@
 ﻿if (typeof entries === 'undefined')
     var entries = [];
 
+let topHeader = document.querySelector("header.header");
+if (topHeader !== null)
+    topHeader.remove();
+
+document.querySelectorAll("section[data-label^='ad:']").forEach(e => e.remove());
+
 function enableDesignerMode() {
     document.addEventListener('click', document.fnDesignerMode = function (event) {
         let articleNode = event.target;
@@ -78,6 +84,8 @@ function sendScreenshotData(entryNumber) {
 
 function hideEntryNumberNode(entryNumber) {
     entries[entryNumber].numberNode.hidden = true;
+
+    window.scroll(0, entries[entryNumber].node.getBoundingClientRect().top + document.documentElement.scrollTop);
 }
 
 function showEntryNumberNode(entryNumber) {
@@ -86,4 +94,14 @@ function showEntryNumberNode(entryNumber) {
 
 function cleanEntries() {
     entries = [];
+}
+
+function sendSpeechData(entryNumber) {
+    let json = {
+        message: "SpeechData",
+        entryNumber: entryNumber,
+        text: entries[entryNumber].node.querySelector("div.content").innerText
+    }
+
+    window.chrome.webview.postMessage(json);
 }

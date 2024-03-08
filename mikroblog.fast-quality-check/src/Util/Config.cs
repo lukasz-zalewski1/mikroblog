@@ -35,7 +35,7 @@ namespace mikroblog.fast_quality_check
             var configData = TryReadFile(_path);
             if (configData == null)
             {
-                Log.WriteWarning("Config not found or empty");
+                Log.WriteError("Config not found or empty");
                 return;
             }
 
