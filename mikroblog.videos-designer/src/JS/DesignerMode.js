@@ -97,10 +97,16 @@ function cleanEntries() {
 }
 
 function sendSpeechData(entryNumber) {
+    let isMale = true;
+
+    if (entries[entryNumber].node.querySelector("figure.female"))
+        isMale = false;
+
     let json = {
         message: "SpeechData",
         entryNumber: entryNumber,
-        text: entries[entryNumber].node.querySelector("div.content").innerText
+        text: entries[entryNumber].node.querySelector("div.content").innerText,
+        isMale: isMale
     }
 
     window.chrome.webview.postMessage(json);

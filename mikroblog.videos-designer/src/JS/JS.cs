@@ -22,6 +22,11 @@ namespace mikroblog.videos_designer
             return result;
         }
 
+        public static bool TryGetBoolFromJsonNode(JsonNode node, out bool value)
+        {
+            return bool.TryParse(node.ToString(), out value);        
+        }
+
         public static async void ExecuteJSScript(WebView2 webView, string name)
         {
             string? script = Util.GetResource(name);

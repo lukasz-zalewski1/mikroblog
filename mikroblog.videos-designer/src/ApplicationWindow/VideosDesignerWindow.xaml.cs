@@ -333,23 +333,25 @@ namespace mikroblog.videos_designer
 
         private async void JsonMessageSpeechData(JsonObject json)
         {
-            ValidateSpeechData(json, out string text, out int entryNumber);
+            ValidateSpeechData(json, out int entryNumber, out string text, out bool isMale);
 
-            await _speechService.GenerateAudioFile($"c:\\users\\lza\\desktop\\workplace\\test\\{entryNumber}.wav", PrepareTextForSpeech(text), true);
+            await _speechService.GenerateAudioFile($"c:\\users\\lza\\desktop\\workplace\\test\\{entryNumber}.wav", PrepareTextForSpeech(text), isMale);
         }
 
-        private bool ValidateSpeechData(JsonObject json, out string text, out int entryNumber)
+        private bool ValidateSpeechData(JsonObject json, out int entryNumber, out string text, out bool isMale)
         {
             text = string.Empty;
             entryNumber = -1;
+            isMale = true;
 
-            if (json["entryNumber"] == null || json["text"] == null)
+            if (json["entryNumber"] == null || json["text"] == null || json["isMale"] == null)
             {
                 Log.WriteError("Invalid speech data");
                 return false;
             }
 
-            if (!JS.TryGetIntFromJsonNode(json["entryNumber"], out entryNumber))
+            if (!JS.TryGetIntFromJsonNode(json["entryNumber"], out entryNumber) ||
+                !JS.TryGetBoolFromJsonNode(json["isMale"], out isMale))
             {
                 Log.WriteError("Invalid speech data");
                 return false;
