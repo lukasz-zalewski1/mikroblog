@@ -102,12 +102,19 @@ function sendSpeechData(entryNumber) {
     if (entries[entryNumber].node.querySelector("figure.female"))
         isMale = false;
 
+    let blockquote = (entries[entryNumber].node.querySelector("div.content").querySelector("blockquote"))
+    if (blockquote)
+        blockquote.hidden = true;
+
     let json = {
         message: "SpeechData",
         entryNumber: entryNumber,
         text: entries[entryNumber].node.querySelector("div.content").innerText,
         isMale: isMale
     }
+
+    if (blockquote)
+        blockquote.hidden = false;
 
     window.chrome.webview.postMessage(json);
 }
