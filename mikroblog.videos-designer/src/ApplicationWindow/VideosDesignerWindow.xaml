@@ -8,27 +8,29 @@
         Title="Mikroblog Videos Designer" Width="1920" Height="1080" WindowStyle="None" WindowState="Maximized">
     <Viewbox Stretch="Fill">
         <Grid x:Name="_grid" Width="1920" Height="1080">
-            <Wpf:WebView2 Name="_webView" HorizontalAlignment="Left" Height="1080" VerticalAlignment="Center" Width="960" Margin="960,0,0,0"/>
-            <Label x:Name="_labelDiscussionId" Content="Discussion Id: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" Margin="0,0,0,0"/>
-            <Label x:Name="_labelDiscussionNumber" Content="Discussion: x / y" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" Margin="300,0,0,0"/>
-            <Label x:Name="_labelDiscussionQuality" Content="Quality: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="345" Height="30" FontSize="16" Margin="610,0,0,0"/>
-            <Button x:Name="_buttonPreviousDiscussion" Content="&lt;" HorizontalAlignment="Left" Margin="305,35,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonPreviousDiscussion_Click"/>
-            <Button x:Name="_buttonNextDiscussion" Content="&gt;" HorizontalAlignment="Left" Margin="345,35,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonNextDiscussion_Click" RenderTransformOrigin="1.983,2.95"/>
-            <Button x:Name="_buttonDropDiscussion" Content="Drop Discussion" HorizontalAlignment="Left" Margin="400,35,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDropDiscussion_Click"/>
-            <Button x:Name="_buttonTextEditMode" Content="Enable Text Edit Mode" HorizontalAlignment="Left" Margin="0,120,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonTextEditMode_Click" />
-            <Button x:Name="_buttonDesignerMode" Content="Enable Designer Mode" HorizontalAlignment="Left" Margin="0,290,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDesignerMode_Click" />
-            <ListBox x:Name="_listboxEntries" Margin="360,120,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="200"/>
-            <Button x:Name="_buttonScreenshot" Content="Screenshot" HorizontalAlignment="Left" Margin="460,120,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshot_Click" />
-            <Button x:Name="_buttonScreenshotAll" Content="Screenshot All" HorizontalAlignment="Left" Margin="710,120,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotAll_Click" />
-            <Button x:Name="_buttonSpeak" Content="Speak" HorizontalAlignment="Left" Margin="460,205,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonSpeak_Click" />
-            <Button x:Name="_buttonSpeakAll" Content="Speak All" HorizontalAlignment="Left" Margin="710,205,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonSpeakAll_Click" />
-            <Button x:Name="_buttonScreenshotSpeak" Content="Screenshot and Speak" HorizontalAlignment="Left" Margin="460,290,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeak_Click" />
-            <Button x:Name="_buttonScreenshotSpeakAll" Content="Screenshot and Speak All" HorizontalAlignment="Left" Margin="710,290,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeakAll_Click" RenderTransformOrigin="-0.598,1.983" />
-            <Image x:Name="_screenshotViewer" HorizontalAlignment="Left" Height="640" Margin="0,400,0,0" VerticalAlignment="Top" Width="960"/>
-            <Button x:Name="_buttonPlaySpeech" Content="Play Speech" HorizontalAlignment="Left" Margin="0,360,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonPlaySpeech_Click" IsEnabled="False" />
-            <TextBox x:Name="_textboxSpeechLength" HorizontalAlignment="Left" Margin="360,360,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Height="30" FontSize="16"/>
-            <Button x:Name="_buttonPrepareVideoScript" Content="Prepare Video Script" HorizontalAlignment="Left" Margin="460,360,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonPrepareVideoScript_Click" />
-            <Button x:Name="_buttonRunVideoScript" Content="Run Video Script" HorizontalAlignment="Left" Margin="710,360,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" />
+            <Wpf:WebView2 Name="_webView" HorizontalAlignment="Left" Height="1060" VerticalAlignment="Top" Width="600" Margin="1310,10,0,0"/>
+            <Label x:Name="_labelDiscussionId" Content="Discussion Id: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" Margin="20,60,0,0"/>
+            <Label x:Name="_labelDiscussionNumber" Content="Discussion: x / y" HorizontalAlignment="Left" VerticalAlignment="Top" Width="240" Height="30" FontSize="16" Margin="20,20,0,0"/>
+            <Label x:Name="_labelDiscussionQuality" Content="Quality: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="345" Height="30" FontSize="16" Margin="20,100,0,0"/>
+            <Button x:Name="_buttonPreviousDiscussion" Content="&lt;" HorizontalAlignment="Left" Margin="290,20,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonPreviousDiscussion_Click"/>
+            <Button x:Name="_buttonNextDiscussion" Content="&gt;" HorizontalAlignment="Left" Margin="330,20,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonNextDiscussion_Click" RenderTransformOrigin="1.983,2.95"/>
+            <Button x:Name="_buttonDropDiscussion" Content="Drop Discussion" HorizontalAlignment="Left" Margin="380,20,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDropDiscussion_Click"/>
+            <Button x:Name="_buttonTextEditMode" Content="Enable Text Edit Mode" HorizontalAlignment="Left" Margin="70,260,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonTextEditMode_Click" />
+            <Button x:Name="_buttonDesignerMode" Content="Enable Designer Mode" HorizontalAlignment="Left" Margin="330,260,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDesignerMode_Click" />
+            <ListBox x:Name="_listboxEntries" Margin="20,400,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="330"/>
+            <Button x:Name="_buttonScreenshot" Content="Screenshot" HorizontalAlignment="Left" Margin="150,400,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshot_Click" />
+            <Button x:Name="_buttonScreenshotAll" Content="Screenshot All" HorizontalAlignment="Left" Margin="380,400,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotAll_Click" />
+            <Button x:Name="_buttonSpeak" Content="Speak" HorizontalAlignment="Left" Margin="150,450,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonSpeak_Click" />
+            <Button x:Name="_buttonSpeakAll" Content="Speak All" HorizontalAlignment="Left" Margin="380,450,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonSpeakAll_Click" />
+            <Button x:Name="_buttonScreenshotSpeak" Content="Screenshot and Speak" HorizontalAlignment="Left" Margin="150,500,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeak_Click" />
+            <Button x:Name="_buttonScreenshotSpeakAll" Content="Screenshot and Speak All" HorizontalAlignment="Left" Margin="380,500,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeakAll_Click" RenderTransformOrigin="-0.598,1.983" />
+            <Image x:Name="_screenshotViewer" HorizontalAlignment="Left" Height="1060" Margin="690,10,0,0" VerticalAlignment="Top" Width="600"/>
+            <Button x:Name="_buttonPlaySpeech" Content="Play Speech" HorizontalAlignment="Left" Margin="380,600,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonPlaySpeech_Click" IsEnabled="False" />
+            <TextBox x:Name="_textboxSpeechLength" HorizontalAlignment="Left" Margin="150,600,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="30" FontSize="16"/>
+            <Button x:Name="_buttonCreateVideo" Content="Create Video" HorizontalAlignment="Left" Margin="250,700,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonCreateVideo_Click" />
+            <Border BorderBrush="Black" BorderThickness="1" Width="580" HorizontalAlignment="Left" VerticalAlignment="Top" Height="300" Margin="10,10,0,0"/>
+            <Border x:Name="_borderScreenshotViewer" BorderBrush="Black" BorderThickness="1" Height="1060" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="690,10,0,0"/>
+            <Border x:Name="_borderDesignerMode" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="580" Height="350" Margin="10,390,0,0"/>
 
         </Grid>
     </Viewbox>

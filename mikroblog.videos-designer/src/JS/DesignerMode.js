@@ -7,6 +7,10 @@ if (topHeader !== null)
 
 document.querySelectorAll("section[data-label^='ad:']").forEach(e => e.remove());
 
+let navbar = document.querySelector("nav.mobile-navbar");
+if (navbar !== null)
+    navbar.remove();
+
 function enableDesignerMode() {
     document.addEventListener('click', document.fnDesignerMode = function (event) {
         let articleNode = event.target;
@@ -38,6 +42,7 @@ function addNewEntry(entryNode) {
     numberNode.innerText = entries.length + 1;
 
     entryNode.insertBefore(numberNode);
+    // entryNode.querySelector("div.wrapper").style.fontSize = "20px";
 
     entries.push({ node: entryNode, numberNode: numberNode });   
 

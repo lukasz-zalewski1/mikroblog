@@ -14,7 +14,6 @@ using Microsoft.Web.WebView2.Core;
 using mikroblog.fast_quality_check;
 using System.IO;
 using System.Windows.Media.Imaging;
-using System.Collections.Generic;
 using System.Media;
 using System.Windows.Controls;
 
@@ -47,6 +46,7 @@ namespace mikroblog.videos_designer
             ScreenshotAndSpeakAll
         }
 
+        private readonly string DISCUSSIONS_PATH = Path.Combine(fast_quality_check.Util.WORKPLACE_PATH, "discussions");
         private readonly string VIDEOS_PATH = Path.Combine(fast_quality_check.Util.WORKPLACE_PATH, "videos");
 
         // private readonly Config _configQualityDiscussions = new(Manager.QUALITY_DISCUSSIONS_FILE_NAME);
@@ -213,9 +213,9 @@ namespace mikroblog.videos_designer
             PlaySpeech();
         }
 
-        private void _buttonPrepareVideoScript_Click(object sender, RoutedEventArgs e)
+        private void _buttonCreateVideo_Click(object sender, RoutedEventArgs e)
         {
-            PrepareVideoScript();
+            Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH);
         }
         #endregion ButtonsEvents
 
@@ -227,7 +227,7 @@ namespace mikroblog.videos_designer
                 return;
             }
 
-            string path = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".png");
+            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".png");
 
             if (!File.Exists(path))
             {
@@ -257,7 +257,7 @@ namespace mikroblog.videos_designer
                 return;
             }
 
-            string path = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
+            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
 
             if (!File.Exists(path))
             {
@@ -277,7 +277,7 @@ namespace mikroblog.videos_designer
                 return;
             }
 
-            string path = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
+            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
 
             if (!File.Exists(path))
             {
@@ -309,7 +309,7 @@ namespace mikroblog.videos_designer
             if (_listboxEntries.SelectedItem == null)
                 return;
 
-            string path = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
+            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
 
             try
             {
@@ -323,7 +323,7 @@ namespace mikroblog.videos_designer
 
         private void PlaySpeech()
         {
-            string path = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
+            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
 
             if (!File.Exists(path))
             {
@@ -489,11 +489,6 @@ namespace mikroblog.videos_designer
             }
         }
 
-        private void PrepareVideoScript()
-        {
-            
-        }
-
         #region WebView Events
         private void InitializeWebViewEvents()
         {
@@ -604,7 +599,7 @@ namespace mikroblog.videos_designer
             double displayScaling = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice.M11;
 
             rect.X = (int)(rect.X * displayScaling);
-            rect.X += (int)_webView.Width;
+            rect.X += (int)_webView.Margin.Left;
             rect.Y = (int)(rect.Y * displayScaling);
             rect.Width = (int)(rect.Width * displayScaling);
             rect.Height = (int)(rect.Height * displayScaling);
@@ -614,20 +609,42 @@ namespace mikroblog.videos_designer
 
         private void TakeScreenshot(int entryNumber, Rectangle rect)
         {
-            Bitmap bitmap = new(rect.Width, rect.Height);
-            Graphics graphics = Graphics.FromImage(bitmap);
-
-            graphics.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size(rect.Width, rect.Height));
-
-            string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionVideoFolder(), (entryNumber + 1).ToString()), ".png");
+            Thread.Sleep(SCREENSHOT_DELAY);
 
             try
             {
-                bitmap.Save(path, ImageFormat.Png);
+                Bitmap bitmap = new(rect.Width, rect.Height);
+                Graphics graphics = Graphics.FromImage(bitmap);
+
+                graphics.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size(rect.Width * 16 / 9, rect.Height * 16 / 9));
+
+
+                string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionVideoFolder(), (entryNumber + 1).ToString()), ".png");
+
+
+                Bitmap canvas = new Bitmap(1080, 1920);
+                using (var g = Graphics.FromImage(canvas))
+                {
+                    g.Clear(Color.Black);
+
+                    //g.DrawImage(bitmap, 540 - bitmap.Width / 2, 960 - bitmap.Height / 2);
+                    var bitmapWidth = bitmap.Width * 16 / 9;
+                    var bitmapHeight = bitmap.Height * 16 / 9;
+                    g.DrawImage(bitmap, 540 - bitmapWidth / 2, 960 - bitmapHeight / 2, bitmapWidth, bitmapHeight);
+
+                    try
+                    {
+                        canvas.Save(path, ImageFormat.Png);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.WriteError($"Couldn't save a screenshot {ex.Message}");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Log.WriteError($"Couldn't save a screenshot {ex.Message}");
+                Log.WriteError($"Couldn't take a screenshot, Exception - {ex.Message}");
             }
 
             UpdateScreenshotViewer();
@@ -709,7 +726,7 @@ namespace mikroblog.videos_designer
             if (discussionId == null)
                 return string.Empty;
 
-            string discussionPath = Path.Combine(VIDEOS_PATH, discussionId);
+            string discussionPath = Path.Combine(DISCUSSIONS_PATH, discussionId);
 
             if (!Directory.Exists(discussionPath))
                 Directory.CreateDirectory(discussionPath);
@@ -789,8 +806,10 @@ namespace mikroblog.videos_designer
             _screenshotViewer.Visibility = visibility;
             _textboxSpeechLength.Visibility = visibility;
 
-            _buttonPrepareVideoScript.Visibility = visibility;
-            _buttonRunVideoScript.Visibility = visibility;
+            _buttonCreateVideo.Visibility = visibility;
+
+            _borderDesignerMode.Visibility = visibility;
+            _borderScreenshotViewer.Visibility = visibility;
         }
 
         private void CleanScreenshotViewer()

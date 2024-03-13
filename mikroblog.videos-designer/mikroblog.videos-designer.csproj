@@ -37,4 +37,13 @@
     <ProjectReference Include="..\mikroblog.fast-quality-check\mikroblog.fast-quality-check.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ffmpeg\ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="pwsh\CreateVideo.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
