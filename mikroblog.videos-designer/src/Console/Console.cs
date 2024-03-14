@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 
+// TODO:
+// Audio length changes lenght of audio in designer window
+// Cleanup of files in discussion folder
+// Comments
+// Restructure
+
 namespace mikroblog.videos_designer
 {
     internal class Console
