@@ -16,6 +16,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Media;
 using System.Windows.Controls;
+using Microsoft.VisualBasic;
 
 #pragma warning disable CS8602
 #pragma warning disable CS8604
@@ -63,6 +64,8 @@ namespace mikroblog.videos_designer
         private StateType _state;
 
         private TextToSpeech _speechService = new();
+        private System.Timers.Timer? _speechTimer = new();
+        private bool _isSpeechPlayed = false;
 
         private SoundPlayer _soundPlayer = new();
       
@@ -74,7 +77,7 @@ namespace mikroblog.videos_designer
 
             InitializeEvents();
            
-            InitializeMikroblogBrowser();
+            InitializeMikroblogBrowser(); 
         }
 
         #region Controls
@@ -87,9 +90,36 @@ namespace mikroblog.videos_designer
 
         private void UpdateControls()
         {
+            UpdateGridRemoveDiscussionFiles();
+
             UpdateLabelDiscussionId();
             UpdateLabelDiscussionNumber();
             UpdateLabelDiscussionQuality();
+        }
+
+        private void UpdateGridRemoveDiscussionFiles()
+        {
+            var discussionId = GetCurrentDiscussionId();
+
+            if (discussionId == null)
+            {
+                _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            if (!Directory.Exists(GetCurrentDiscussionVideoFolder()))
+            {
+                _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            if (Directory.GetFiles(GetCurrentDiscussionVideoFolder()).Length <= 0)
+            {
+                _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            _gridRemoveDiscussionFiles.Visibility = Visibility.Visible;
         }
 
         private void UpdateLabelDiscussionId()
@@ -116,6 +146,8 @@ namespace mikroblog.videos_designer
 
             _textboxSpeechLength.TextChanged += _textboxSpeechLength_TextChanged;
             _textboxSpeechLength.PreviewTextInput += _textboxSpeechLength_PreviewTextInput;
+
+            _speechTimer.Elapsed += _speechTimer_Elapsed;
 
             InitializeWebViewEvents();
         }
@@ -168,6 +200,11 @@ namespace mikroblog.videos_designer
             DropDiscussion();
         }
 
+        private void _buttonRemoveDiscussionFiles_Click(object sender, RoutedEventArgs e)
+        {
+            RemoveDiscussionFiles();
+        }
+
         private void _buttonTextEditMode_Click(object sender, RoutedEventArgs e)
         {
             TextEditMode();
@@ -210,14 +247,43 @@ namespace mikroblog.videos_designer
 
         private void _buttonPlaySpeech_Click(object sender, RoutedEventArgs e)
         {
-            PlaySpeech();
+            if (_isSpeechPlayed)
+                StopSpeech();
+            else
+                PlaySpeech();
         }
 
         private void _buttonCreateVideo_Click(object sender, RoutedEventArgs e)
         {
             Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH);
         }
+
+        private void _speechTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            StopSpeech();
+        }
         #endregion ButtonsEvents
+
+        private void RemoveDiscussionFiles()
+        {
+            var path = GetCurrentDiscussionVideoFolder();
+
+            if (!Directory.Exists(path))
+                return;
+
+            try
+            {
+                Directory.Delete(path, true);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError($"Removing discussion directory wasn't possible, Exception - {ex.Message}");
+            }
+
+            UpdateSpeechButton();
+            UpdateScreenshotViewer();
+            UpdateControls();
+        }
 
         private void UpdateScreenshotViewer()
         {
@@ -334,6 +400,37 @@ namespace mikroblog.videos_designer
             _soundPlayer = new(path);
 
             _soundPlayer.Play();
+
+            StartSpeechTimer();
+
+            _isSpeechPlayed = true;
+            UpdateSpeechButton();
+        }
+
+        private void StartSpeechTimer()
+        {
+            if (!double.TryParse(_textboxSpeechLength.Text, out double interval))
+                return;
+
+            _speechTimer.Interval = interval * 1000;
+            _speechTimer.Start();
+        }
+
+        private void UpdateSpeechButton()
+        {
+            if (_isSpeechPlayed)
+                _buttonPlaySpeech.Content = "Stop Speech";
+            else
+                _buttonPlaySpeech.Content = "Play Speech";
+        }
+
+        private void StopSpeech()
+        {
+            _speechTimer.Stop();
+            _soundPlayer.Stop();
+
+            _isSpeechPlayed = false;
+            UpdateSpeechButton();
         }
 
         private void CleanupModesChanges()
@@ -354,17 +451,20 @@ namespace mikroblog.videos_designer
             if (_currentDiscussion > 0)
                 _currentDiscussion -= 1;
 
-            OpenDiscussion(GetCurrentDiscussionId());
-
-            CleanupModesChanges();
-
-            UpdateControls();
+            ChangeDiscussion();
         }
 
         private void NextDiscussion()
         {
             if (_currentDiscussion + 1 < DiscussionsCount)
                 _currentDiscussion += 1;
+
+            ChangeDiscussion();
+        }
+
+        private void ChangeDiscussion()
+        {
+            StopSpeech();
 
             OpenDiscussion(GetCurrentDiscussionId());
 
@@ -627,7 +727,6 @@ namespace mikroblog.videos_designer
                 {
                     g.Clear(Color.Black);
 
-                    //g.DrawImage(bitmap, 540 - bitmap.Width / 2, 960 - bitmap.Height / 2);
                     var bitmapWidth = bitmap.Width * 16 / 9;
                     var bitmapHeight = bitmap.Height * 16 / 9;
                     g.DrawImage(bitmap, 540 - bitmapWidth / 2, 960 - bitmapHeight / 2, bitmapWidth, bitmapHeight);
@@ -647,6 +746,7 @@ namespace mikroblog.videos_designer
                 Log.WriteError($"Couldn't take a screenshot, Exception - {ex.Message}");
             }
 
+            UpdateControls();
             UpdateScreenshotViewer();
         }
 
@@ -659,6 +759,7 @@ namespace mikroblog.videos_designer
 
             SaveSpeechLengthToFile(entryNumber, speechLength);
 
+            UpdateControls();
             UpdatePlaySpeechButton();
             UpdateSpeechLengthTextbox();
         }
@@ -794,22 +895,8 @@ namespace mikroblog.videos_designer
         {
             Visibility visibility = display ? Visibility.Visible : Visibility.Hidden;
 
-            _buttonScreenshot.Visibility = visibility;
-            _buttonScreenshotAll.Visibility = visibility;
-            _buttonSpeak.Visibility = visibility;
-            _buttonSpeakAll.Visibility = visibility;
-            _buttonScreenshotSpeak.Visibility = visibility;
-            _buttonScreenshotSpeakAll.Visibility = visibility;
-
-            _listboxEntries.Visibility = visibility;
-            _buttonPlaySpeech.Visibility = visibility;
-            _screenshotViewer.Visibility = visibility;
-            _textboxSpeechLength.Visibility = visibility;
-
-            _buttonCreateVideo.Visibility = visibility;
-
-            _borderDesignerMode.Visibility = visibility;
-            _borderScreenshotViewer.Visibility = visibility;
+            _gridDesignerMenu.Visibility = visibility;
+            _gridScreenshotViewer.Visibility = visibility;
         }
 
         private void CleanScreenshotViewer()
