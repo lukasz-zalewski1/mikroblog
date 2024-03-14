@@ -418,10 +418,13 @@ namespace mikroblog.videos_designer
 
         private void UpdateSpeechButton()
         {
-            if (_isSpeechPlayed)
-                _buttonPlaySpeech.Content = "Stop Speech";
-            else
-                _buttonPlaySpeech.Content = "Play Speech";
+            Dispatcher.Invoke(new Action(() =>
+            {
+                if (_isSpeechPlayed)
+                    _buttonPlaySpeech.Content = "Stop Speech";
+                else
+                    _buttonPlaySpeech.Content = "Play Speech";
+            }));
         }
 
         private void StopSpeech()
