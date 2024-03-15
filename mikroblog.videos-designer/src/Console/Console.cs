@@ -2,8 +2,7 @@
 using System.Diagnostics;
 
 // TODO:
-// Audio length changes lenght of audio in designer window
-// Cleanup of files in discussion folder
+// UI Updates
 // Comments
 // Restructure
 

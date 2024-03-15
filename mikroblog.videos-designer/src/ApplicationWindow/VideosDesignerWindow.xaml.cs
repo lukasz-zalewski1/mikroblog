@@ -16,7 +16,8 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using System.Media;
 using System.Windows.Controls;
-using Microsoft.VisualBasic;
+using System.Windows.Media;
+using System.Collections.Generic;
 
 #pragma warning disable CS8602
 #pragma warning disable CS8604
@@ -68,7 +69,15 @@ namespace mikroblog.videos_designer
         private bool _isSpeechPlayed = false;
 
         private SoundPlayer _soundPlayer = new();
-      
+
+        private bool _isVideoPlayed = false;
+
+        private readonly SolidColorBrush COLOR_BACKGROUND = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 190, 152));
+        private readonly SolidColorBrush COLOR_BUTTON = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 254, 236, 226));
+        private readonly SolidColorBrush COLOR_TEXT = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 247, 222, 208));
+        private readonly SolidColorBrush COLOR_WARNING = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
+        
+
         public VideosDesignerWindow()
         {
             InitializeComponent();
@@ -85,6 +94,8 @@ namespace mikroblog.videos_designer
         {
             DisplayDesignerControls(false);
 
+            InitializeControlsColors();
+
             UpdateControls();
         }
 
@@ -95,6 +106,39 @@ namespace mikroblog.videos_designer
             UpdateLabelDiscussionId();
             UpdateLabelDiscussionNumber();
             UpdateLabelDiscussionQuality();
+        }
+
+        private void InitializeControlsColors()
+        {
+            var grids = new List<Grid> { _grid, _gridMenu, _gridRemoveDiscussionFiles, _gridDesignerMenu, _gridPlayer };
+
+            foreach (var grid in grids)
+            {
+                foreach (var control in grid.Children)
+                {
+                    if (control is Label)
+                        ((Label)control).Foreground = COLOR_TEXT;
+                    else if (control is Button)
+                    {
+                        ((Button)control).Background = COLOR_BUTTON;
+                        ((Button)control).Foreground = COLOR_TEXT;
+                    }
+                    else if (control is Border)
+                        ((Border)control).BorderBrush = COLOR_BUTTON;
+                    else if (control is ListBox)
+                    {
+                        ((ListBox)control).Background = COLOR_BUTTON;
+                        ((ListBox)control).Foreground = COLOR_TEXT;
+                    }
+                    else if (control is TextBox)
+                    {
+                        ((TextBox)control).Background = COLOR_BUTTON;
+                        ((TextBox)control).Foreground = COLOR_TEXT;
+                    }
+                }
+
+                grid.Background = COLOR_BACKGROUND;
+            }
         }
 
         private void UpdateGridRemoveDiscussionFiles()
@@ -160,6 +204,7 @@ namespace mikroblog.videos_designer
 
         private void _listboxEntries_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            ScreenshotViewerVideoPlayerVisibility(true);
             UpdateScreenshotViewer();
             UpdatePlaySpeechButton();
             UpdateSpeechLengthTextbox();
@@ -255,7 +300,20 @@ namespace mikroblog.videos_designer
 
         private void _buttonCreateVideo_Click(object sender, RoutedEventArgs e)
         {
-            Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH);
+            CreateVideo();   
+        }
+
+        private void _buttonPlayVideo_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isVideoPlayed)
+                PlayVideo();
+            else
+                StopVideo();
+        }
+
+        private void _videoPlayer_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            StopVideo();
         }
 
         private void _speechTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -434,6 +492,68 @@ namespace mikroblog.videos_designer
 
             _isSpeechPlayed = false;
             UpdateSpeechButton();
+        }
+
+        private void CreateVideo()
+        {
+            StopVideo();
+            _videoPlayer.Source = null;
+            Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH);
+        }
+
+        private void PlayVideo()
+        {
+            var discussionId = GetCurrentDiscussionId();
+            if (discussionId == null)
+                return;
+
+            //string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, discussionId), ".mp4");
+            string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, "video"), ".mp4");
+
+            if (!File.Exists(videoPath))
+                return;
+
+            ScreenshotViewerVideoPlayerVisibility(false);
+
+            _videoPlayer.Source = new Uri(videoPath);
+            _videoPlayer.MediaEnded += _videoPlayer_MediaEnded;
+
+            _videoPlayer.Play();
+            _isVideoPlayed = true;
+
+            UpdatePlayVideoButton();
+        }
+
+        private void StopVideo()
+        {
+            _isVideoPlayed = false;
+
+            _videoPlayer.Stop();
+            UpdatePlayVideoButton();
+        }
+
+        private void ScreenshotViewerVideoPlayerVisibility(bool showScreenshotViewer)
+        {
+            if (showScreenshotViewer)
+            {
+                _screenshotViewer.Visibility = Visibility.Visible;
+                _videoPlayer.Visibility = Visibility.Hidden;
+
+                StopVideo();
+            }
+            else
+            {
+                _screenshotViewer.Visibility = Visibility.Hidden;
+                _videoPlayer.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void UpdatePlayVideoButton()
+        {
+            if (_isVideoPlayed)
+                _buttonPlayVideo.Content = "Stop Video";
+            else
+                _buttonPlayVideo.Content = "Play Video";
         }
 
         private void CleanupModesChanges()
@@ -728,7 +848,7 @@ namespace mikroblog.videos_designer
                 Bitmap canvas = new Bitmap(1080, 1920);
                 using (var g = Graphics.FromImage(canvas))
                 {
-                    g.Clear(Color.Black);
+                    g.Clear(System.Drawing.Color.Black);
 
                     var bitmapWidth = bitmap.Width * 16 / 9;
                     var bitmapHeight = bitmap.Height * 16 / 9;
@@ -899,7 +1019,7 @@ namespace mikroblog.videos_designer
             Visibility visibility = display ? Visibility.Visible : Visibility.Hidden;
 
             _gridDesignerMenu.Visibility = visibility;
-            _gridScreenshotViewer.Visibility = visibility;
+            _gridPlayer.Visibility = visibility;
         }
 
         private void CleanScreenshotViewer()

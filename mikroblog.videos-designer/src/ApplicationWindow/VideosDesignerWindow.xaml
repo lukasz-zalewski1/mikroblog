@@ -9,46 +9,51 @@
     <Viewbox Stretch="Fill">
         <Grid x:Name="_grid" Width="1920" Height="1080">
             <Wpf:WebView2 Name="_webView" HorizontalAlignment="Left" Height="1060" VerticalAlignment="Top" Width="600" Margin="1310,10,0,0"/>
-            <Grid Name="_gridMenu" Width="580" Height="380" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">
-                <Border BorderBrush="Black" BorderThickness="1" Width="580" HorizontalAlignment="Left" VerticalAlignment="Top" Height="380"/>
-                
-                <Label x:Name="_labelDiscussionNumber" Content="Discussion: x / y" HorizontalAlignment="Left" VerticalAlignment="Top" Width="240" Height="30" FontSize="16" Margin="10,10,0,0"/>
-                <Label x:Name="_labelDiscussionId" Content="Discussion Id: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" Margin="10,50,0,0"/>
-                <Label x:Name="_labelDiscussionQuality" Content="Quality: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="345" Height="30" FontSize="16" Margin="10,90,0,0"/>
-                
-                <Button x:Name="_buttonPreviousDiscussion" Content="&lt;" HorizontalAlignment="Left" Margin="280,10,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonPreviousDiscussion_Click"/>
-                <Button x:Name="_buttonNextDiscussion" Content="&gt;" HorizontalAlignment="Left" Margin="320,10,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonNextDiscussion_Click" RenderTransformOrigin="1.983,2.95"/>
-                <Button x:Name="_buttonDropDiscussion" Content="Drop Discussion" HorizontalAlignment="Left" Margin="370,10,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDropDiscussion_Click"/>
 
-                <Grid x:Name="_gridRemoveDiscussionFiles" Width="580" Height="80" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,170,0,0">
-                    <Label x:Name="_labelExistingDiscussionFiles" Content="There are existing files in the discussion folder, do you want to remove them?" HorizontalAlignment="Center" VerticalAlignment="Top" Height="30" FontSize="16" Foreground="Red"/>
+            <Grid Name="_gridMenu" Width="580" Height="380" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0">
+                <Border BorderThickness="2" Width="580" HorizontalAlignment="Left" VerticalAlignment="Top" Height="380"/>
+
+                <Label x:Name="_labelDiscussionNumber" Content="Discussion: x / y" HorizontalAlignment="Left" VerticalAlignment="Top" Width="240" Height="30" FontSize="16" Margin="10,10,0,0" />
+                <Label x:Name="_labelDiscussionId" Content="Discussion Id: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" FontSize="16" Margin="10,50,0,0" />
+                <Label x:Name="_labelDiscussionQuality" Content="Quality: x" HorizontalAlignment="Left" VerticalAlignment="Top" Width="345" Height="30" FontSize="16" Margin="10,90,0,0" />
+
+                <Button x:Name="_buttonPreviousDiscussion" Content="&lt;" HorizontalAlignment="Left" Margin="280,10,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonPreviousDiscussion_Click" />
+                <Button x:Name="_buttonNextDiscussion" Content="&gt;" HorizontalAlignment="Left" Margin="320,10,0,0" VerticalAlignment="Top" Height="30" Width="30" FontSize="16" Click="_buttonNextDiscussion_Click" />
+                <Button x:Name="_buttonDropDiscussion" Content="Drop Discussion" HorizontalAlignment="Left" Margin="370,10,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDropDiscussion_Click" />
+
+                <Grid x:Name="_gridRemoveDiscussionFiles" Width="570" Height="80" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,170,0,0">
+                    <Label x:Name="_labelExistingDiscussionFiles" Content="There are existing files in the discussion folder, do you want to remove them?" HorizontalAlignment="Center" VerticalAlignment="Top" Height="30" FontSize="16" />
                     <Button x:Name="_buttonRemoveDiscussionFiles" Content="Remove Discussion Files" HorizontalAlignment="Center" Margin="0,40,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonRemoveDiscussionFiles_Click" />
                 </Grid>
 
                 <Button x:Name="_buttonTextEditMode" Content="Enable Text Edit Mode" HorizontalAlignment="Left" Margin="60,330,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonTextEditMode_Click" />
                 <Button x:Name="_buttonDesignerMode" Content="Enable Designer Mode" HorizontalAlignment="Left" Margin="320,330,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonDesignerMode_Click" />
             </Grid>
+
             <Grid x:Name="_gridDesignerMenu" Width="580" Height="350" Margin="10,500,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Border x:Name="_borderDesignerMode" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="580" Height="350"/>
-                
-                <ListBox x:Name="_listboxEntries" Margin="10,10,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="330"/>
-                
+                <Border x:Name="_borderDesignerMode" BorderThickness="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="580" Height="350"/>
+
+                <ListBox x:Name="_listboxEntries" Margin="10,10,0,0" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Width="50" Height="330" />
+
                 <Button x:Name="_buttonScreenshot" Content="Screenshot" HorizontalAlignment="Left" Margin="140,10,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshot_Click" />
                 <Button x:Name="_buttonScreenshotAll" Content="Screenshot All" HorizontalAlignment="Left" Margin="370,10,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotAll_Click" />
                 <Button x:Name="_buttonSpeak" Content="Speak" HorizontalAlignment="Left" Margin="140,60,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonSpeak_Click" />
                 <Button x:Name="_buttonSpeakAll" Content="Speak All" HorizontalAlignment="Left" Margin="370,60,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonSpeakAll_Click" />
                 <Button x:Name="_buttonScreenshotSpeak" Content="Screenshot and Speak" HorizontalAlignment="Left" Margin="140,110,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeak_Click" />
-                <Button x:Name="_buttonScreenshotSpeakAll" Content="Screenshot and Speak All" HorizontalAlignment="Left" Margin="370,110,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeakAll_Click" RenderTransformOrigin="-0.598,1.983" />
+                <Button x:Name="_buttonScreenshotSpeakAll" Content="Screenshot and Speak All" HorizontalAlignment="Left" Margin="370,110,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonScreenshotSpeakAll_Click" />
 
                 <Button x:Name="_buttonPlaySpeech" Content="Play Speech" HorizontalAlignment="Left" Margin="370,210,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonPlaySpeech_Click" IsEnabled="False" />
-                <TextBox x:Name="_textboxSpeechLength" HorizontalAlignment="Left" Margin="140,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="30" FontSize="16"/>
-                
-                <Button x:Name="_buttonCreateVideo" Content="Create Video" HorizontalAlignment="Left" Margin="240,310,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonCreateVideo_Click" />
-            </Grid>
-            <Grid x:Name="_gridScreenshotViewer">
-                <Border x:Name="_borderScreenshotViewer" BorderBrush="Black" BorderThickness="1" Height="1060" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="690,10,0,0"/>
+                <TextBox x:Name="_textboxSpeechLength" HorizontalAlignment="Left" Margin="140,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="30" FontSize="16" />
 
-                <Image x:Name="_screenshotViewer" HorizontalAlignment="Left" Height="1060" Margin="690,10,0,0" VerticalAlignment="Top" Width="600"/>
+                <Button x:Name="_buttonCreateVideo" Content="Create Video" HorizontalAlignment="Left" Margin="140,310,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonCreateVideo_Click" />
+                <Button x:Name="_buttonPlayVideo" Content="Play Video" HorizontalAlignment="Left" Margin="370, 310,0,0" VerticalAlignment="Top" Height="30" Width="200" FontSize="16" Click="_buttonPlayVideo_Click" />
+            </Grid>
+
+            <Grid x:Name="_gridPlayer" Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="690,10,0,0" >
+                <Border x:Name="_borderPlayer" BorderThickness="2" Height="1060" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+                <Image x:Name="_screenshotViewer" HorizontalAlignment="Left" Height="1060" VerticalAlignment="Top" Width="600"/>
+                <MediaElement x:Name="_videoPlayer" HorizontalAlignment="Left" Height="1060" Margin="0,0,0,0" VerticalAlignment="Top" Width="600" Visibility="Hidden" LoadedBehavior="Manual" UnloadedBehavior="Stop"/>
             </Grid>
         </Grid>
     </Viewbox>
