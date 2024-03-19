@@ -32,22 +32,6 @@ namespace mikroblog.videos_designer
             Designer
         }
 
-        private enum ShortcutCommand
-        {
-            Exit,
-            PreviousDiscussion,
-            NextDiscussion,
-            DropDiscussion,
-            TextEditMode,
-            DesignerMode,
-            Screenshot,
-            ScrenshotAll,
-            Speak,
-            SpeakAll,
-            ScreenshotAndSpeak,
-            ScreenshotAndSpeakAll
-        }
-
         private readonly string DISCUSSIONS_PATH = Path.Combine(fast_quality_check.Util.WORKPLACE_PATH, "discussions");
         private readonly string VIDEOS_PATH = Path.Combine(fast_quality_check.Util.WORKPLACE_PATH, "videos");
 
@@ -70,13 +54,7 @@ namespace mikroblog.videos_designer
 
         private SoundPlayer _soundPlayer = new();
 
-        private bool _isVideoPlayed = false;
-
-        private readonly SolidColorBrush COLOR_BACKGROUND = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 190, 152));
-        private readonly SolidColorBrush COLOR_BUTTON = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 254, 236, 226));
-        private readonly SolidColorBrush COLOR_TEXT = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 247, 222, 208));
-        private readonly SolidColorBrush COLOR_WARNING = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
-        
+        private bool _isVideoPlayed = false;    
 
         public VideosDesignerWindow()
         {
@@ -94,8 +72,6 @@ namespace mikroblog.videos_designer
         {
             DisplayDesignerControls(false);
 
-            InitializeControlsColors();
-
             UpdateControls();
         }
 
@@ -106,39 +82,6 @@ namespace mikroblog.videos_designer
             UpdateLabelDiscussionId();
             UpdateLabelDiscussionNumber();
             UpdateLabelDiscussionQuality();
-        }
-
-        private void InitializeControlsColors()
-        {
-            var grids = new List<Grid> { _grid, _gridMenu, _gridRemoveDiscussionFiles, _gridDesignerMenu, _gridPlayer };
-
-            foreach (var grid in grids)
-            {
-                foreach (var control in grid.Children)
-                {
-                    if (control is Label)
-                        ((Label)control).Foreground = COLOR_TEXT;
-                    else if (control is Button)
-                    {
-                        ((Button)control).Background = COLOR_BUTTON;
-                        ((Button)control).Foreground = COLOR_TEXT;
-                    }
-                    else if (control is Border)
-                        ((Border)control).BorderBrush = COLOR_BUTTON;
-                    else if (control is ListBox)
-                    {
-                        ((ListBox)control).Background = COLOR_BUTTON;
-                        ((ListBox)control).Foreground = COLOR_TEXT;
-                    }
-                    else if (control is TextBox)
-                    {
-                        ((TextBox)control).Background = COLOR_BUTTON;
-                        ((TextBox)control).Foreground = COLOR_TEXT;
-                    }
-                }
-
-                grid.Background = COLOR_BACKGROUND;
-            }
         }
 
         private void UpdateGridRemoveDiscussionFiles()
@@ -206,7 +149,7 @@ namespace mikroblog.videos_designer
         {
             ScreenshotViewerVideoPlayerVisibility(true);
             UpdateScreenshotViewer();
-            UpdatePlaySpeechButton();
+            UpdatePlaySpeechControls();
             UpdateSpeechLengthTextbox();
         }
 
@@ -373,10 +316,11 @@ namespace mikroblog.videos_designer
             }        
         }
 
-        private void UpdatePlaySpeechButton()
+        private void UpdatePlaySpeechControls()
         {
             if (_listboxEntries.SelectedItem == null)
             {
+                _textboxSpeechLength.IsEnabled = false;
                 _buttonPlaySpeech.IsEnabled = false;
                 return;
             }
@@ -385,10 +329,12 @@ namespace mikroblog.videos_designer
 
             if (!File.Exists(path))
             {
+                _textboxSpeechLength.IsEnabled = false;
                 _buttonPlaySpeech.IsEnabled = false;
                 return;
             }
 
+            _textboxSpeechLength.IsEnabled = true;
             _buttonPlaySpeech.IsEnabled = true;
         }
 
@@ -883,7 +829,7 @@ namespace mikroblog.videos_designer
             SaveSpeechLengthToFile(entryNumber, speechLength);
 
             UpdateControls();
-            UpdatePlaySpeechButton();
+            UpdatePlaySpeechControls();
             UpdateSpeechLengthTextbox();
         }
 

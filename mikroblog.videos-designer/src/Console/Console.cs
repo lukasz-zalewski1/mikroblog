@@ -2,7 +2,8 @@
 using System.Diagnostics;
 
 // TODO:
-// UI Updates
+// Make photos not screenshot background at top
+// Make screenshots a bit round
 // Comments
 // Restructure
 

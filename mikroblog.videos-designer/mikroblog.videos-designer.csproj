@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Remove="src\ApplicationWindow\App.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ApplicationDefinition Include="src\ApplicationWindow\App.xaml" />
   </ItemGroup>
 

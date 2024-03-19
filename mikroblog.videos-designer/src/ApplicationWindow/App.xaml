@@ -2,8 +2,60 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:mikroblog.videos_designer"
-             StartupUri="src/ApplicationWindow/VideosDesignerWindow.xaml">
+             StartupUri="/src/ApplicationWindow/VideosDesignerWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="BackgroundColor">#305f72</SolidColorBrush>
+            <SolidColorBrush x:Key="UIElementBackgroundColor">#998679</SolidColorBrush>
+            <SolidColorBrush x:Key="ButtonColor">#8b7064</SolidColorBrush>
+            <SolidColorBrush x:Key="ButtonHoverColor">#e04499</SolidColorBrush>
+            <SolidColorBrush x:Key="DisabledColor">#290202</SolidColorBrush>
+            <SolidColorBrush x:Key="TextColor">#eee3d1</SolidColorBrush>
+            <SolidColorBrush x:Key="WarningColor">#f5df00</SolidColorBrush>
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="10" BorderBrush="{DynamicResource ButtonColor}" Background="{TemplateBinding Background}" BorderThickness="1">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource ButtonHoverColor}"></Setter>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource DisabledColor}"></Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
+            </Style>
+            <Style TargetType="Border">
+                <Setter Property="CornerRadius" Value="10"></Setter>
+                <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Background" Value="{DynamicResource UIElementBackgroundColor}"></Setter>
+            </Style>
+            <Style TargetType="ListBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource DisabledColor}"></Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
