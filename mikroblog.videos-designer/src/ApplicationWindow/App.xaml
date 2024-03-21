@@ -12,6 +12,7 @@
             <SolidColorBrush x:Key="DisabledColor">#290202</SolidColorBrush>
             <SolidColorBrush x:Key="TextColor">#eee3d1</SolidColorBrush>
             <SolidColorBrush x:Key="WarningColor">#f5df00</SolidColorBrush>
+            
             <Style TargetType="Button">
                 <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
@@ -33,19 +34,23 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            
             <Style TargetType="Label">
                 <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
             </Style>
+            
             <Style TargetType="Border">
                 <Setter Property="CornerRadius" Value="10"></Setter>
                 <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
                 <Setter Property="Background" Value="{DynamicResource UIElementBackgroundColor}"></Setter>
             </Style>
+            
             <Style TargetType="ListBox">
                 <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
                 <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
             </Style>
+
             <Style TargetType="TextBox">
                 <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
                 <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
