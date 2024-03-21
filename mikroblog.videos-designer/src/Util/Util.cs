@@ -17,11 +17,8 @@ namespace mikroblog.videos_designer
             try
             {
                 var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
-                if (stream == null)
-                {
-                    Log.WriteError($"Resource not found - {name}");
+                if (stream == null)                
                     return null;
-                }
 
                 using StreamReader streamReader = new(stream);
                 return streamReader.ReadToEnd();
