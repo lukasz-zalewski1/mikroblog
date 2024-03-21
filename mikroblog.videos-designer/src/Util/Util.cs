@@ -1,25 +1,36 @@
-﻿using mikroblog.fast_quality_check;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Reflection;
+
+using mikroblog.fast_quality_check;
 
 namespace mikroblog.videos_designer
 {
     class Util
     {
+        /// <summary>
+        /// Returns resource as a string.
+        /// </summary>
+        /// <returns>Resource string or null if not found</returns>
         public static string? GetResource(string name)
         {
-            var names = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
-            if (stream == null)
+            try
             {
-                Log.WriteError($"Resource not found - {name}");
+                var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+                if (stream == null)
+                {
+                    Log.WriteError($"Resource not found - {name}");
+                    return null;
+                }
+
+                using StreamReader streamReader = new(stream);
+                return streamReader.ReadToEnd();
+            }
+            catch (Exception ex) 
+            {
+                Log.WriteError($"GetManifestResourceStream, Exception - {ex.Message}");
                 return null;
             }
-
-            using StreamReader streamReader = new(stream);
-            return streamReader.ReadToEnd();
         }
     }
 }
