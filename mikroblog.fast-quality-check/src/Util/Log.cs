@@ -2,7 +2,7 @@
 {
     public class Log
     {
-        private static readonly string LOG_PATH = Path.Combine(Util.WORKPLACE_PATH, "logs", DateTime.Now.ToString("u").Replace(":", " ") + ".txt");
+        private static readonly string LOG_PATH = Path.Combine(Util.GetWorkplacePath(), "logs", DateTime.Now.ToString("u").Replace(":", " ") + ".txt");
 
         /// <summary>
         /// Writes a text on the cmd and to the log file.

@@ -5,12 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Text.Json.Nodes;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Windows.Input;
 
 using Microsoft.Web.WebView2.Core;
 
@@ -29,11 +27,13 @@ namespace mikroblog.videos_designer
             Designer
         }
 
-        private readonly string DISCUSSIONS_PATH = Path.Combine(fast_quality_check.Util.WORKPLACE_PATH, "discussions");
-        private readonly string VIDEOS_PATH = Path.Combine(fast_quality_check.Util.WORKPLACE_PATH, "videos");
+        private readonly string DISCUSSIONS_PATH = Path.Combine(fast_quality_check.Util.GetWorkplacePath(), "discussions");
+        private readonly string VIDEOS_PATH = Path.Combine(fast_quality_check.Util.GetWorkplacePath(), "videos");
 
         // private readonly Config _configQualityDiscussions = new(Manager.QUALITY_DISCUSSIONS_FILE_NAME);
         private readonly Config _configQualityDiscussions = new("workon");
+
+        private StateType _state;
 
         private int _currentDiscussion;
         private int DiscussionsCount { get => _configQualityDiscussions.Lines != null ? _configQualityDiscussions.Lines.Count : 0; }
@@ -43,13 +43,11 @@ namespace mikroblog.videos_designer
 
         private const int SCREENSHOT_DELAY = 100;
 
-        private StateType _state;
-
-        private TextToSpeech _speechService = new();
-        private System.Timers.Timer _speechTimer = new();
-        private bool _isSpeechPlayed = false;
+        private readonly TextToSpeech _speechService = new();
 
         private SoundPlayer _soundPlayer = new();
+        private readonly System.Timers.Timer _speechTimer = new();
+        private bool _isSpeechPlayed = false;
 
         private bool _isVideoPlayed = false;    
 

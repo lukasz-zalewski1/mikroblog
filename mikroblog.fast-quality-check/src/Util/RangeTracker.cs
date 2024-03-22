@@ -2,7 +2,7 @@
 {
     class RangeTracker
     {
-        private static readonly string RANGES_FILE_PATH = Path.Combine(Util.WORKPLACE_PATH, "Ranges.txt");
+        private static readonly string RANGES_FILE_PATH = Path.Combine(Util.GetWorkplacePath(), "Ranges.txt");
 
         private const char RANGE_SEPARATOR = ',';
 

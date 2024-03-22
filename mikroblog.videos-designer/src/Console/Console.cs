@@ -2,7 +2,7 @@
 using System.Diagnostics;
 
 // TODO:
-// Push strings into resources
+// Make images of entries round
 // Comments
 // Restructure
 

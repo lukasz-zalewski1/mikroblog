@@ -4,7 +4,7 @@ namespace mikroblog.fast_quality_check
 {
     public class Config
     {
-        public static readonly string CONFIGS_PATH = Path.Combine(Util.WORKPLACE_PATH, "configs");
+        public static readonly string CONFIGS_PATH = Path.Combine(Util.GetWorkplacePath(), "configs");
 
         private readonly string _path;
 
