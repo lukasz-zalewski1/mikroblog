@@ -6,7 +6,7 @@ using mikroblog.fast_quality_check;
 
 namespace mikroblog.videos_designer
 {
-    class Util
+    public class Util
     {
         /// <summary>
         /// Returns resource as a string.

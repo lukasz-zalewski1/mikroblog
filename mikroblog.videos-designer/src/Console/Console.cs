@@ -2,8 +2,7 @@
 using System.Diagnostics;
 
 // TODO:
-// Make photos not screenshot background at top
-// Make screenshots a bit round
+// Push strings into resources
 // Comments
 // Restructure
 
@@ -19,9 +18,9 @@ namespace mikroblog.videos_designer
             App.Main();
         }
 
-        public static void ExecuteCreateVideoScript(string path, string videosPath)
+        public static void ExecuteCreateVideoScript(string path, string videosPath, string discussionId)
         {
-            string args = $" -File \"{SCRIPT_PATH}\" \"{path}\" \"{videosPath}\"";
+            string args = $" -File \"{SCRIPT_PATH}\" \"{path}\" \"{videosPath}\" \"{discussionId}\"";
 
             Process.Start(new ProcessStartInfo("powershell.exe", args));
         }

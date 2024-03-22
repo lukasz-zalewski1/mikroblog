@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Media;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Input;
 
 using Microsoft.Web.WebView2.Core;
 
 using mikroblog.fast_quality_check;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.Media;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Collections.Generic;
 
 #pragma warning disable CS8602
 #pragma warning disable CS8604
@@ -49,7 +46,7 @@ namespace mikroblog.videos_designer
         private StateType _state;
 
         private TextToSpeech _speechService = new();
-        private System.Timers.Timer? _speechTimer = new();
+        private System.Timers.Timer _speechTimer = new();
         private bool _isSpeechPlayed = false;
 
         private SoundPlayer _soundPlayer = new();
@@ -124,146 +121,6 @@ namespace mikroblog.videos_designer
             _labelDiscussionQuality.Content = $"Quality: {GetCurrentDiscussionRating()}";
         }
         #endregion Controls
-
-        private void InitializeEvents()
-        {
-            _window.KeyDown += OnKeyDown;
-
-            _listboxEntries.SelectionChanged += _listboxEntries_SelectionChanged;
-
-            _textboxSpeechLength.TextChanged += _textboxSpeechLength_TextChanged;
-            _textboxSpeechLength.PreviewTextInput += _textboxSpeechLength_PreviewTextInput;
-
-            _speechTimer.Elapsed += _speechTimer_Elapsed;
-
-            InitializeWebViewEvents();
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-                Close();
-        }
-
-        private void _listboxEntries_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            ScreenshotViewerVideoPlayerVisibility(true);
-            UpdateScreenshotViewer();
-            UpdatePlaySpeechControls();
-            UpdateSpeechLengthTextbox();
-        }
-
-        private void _textboxSpeechLength_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            UpdateSpeechLengthFile();
-        }
-
-        private void _textboxSpeechLength_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            bool approvedDecimalPoint = false;
-
-            if (e.Text == ".")
-            {
-                if (!((TextBox)sender).Text.Contains('.'))
-                    approvedDecimalPoint = true;
-            }
-
-            if (!(char.IsDigit(e.Text, e.Text.Length - 1) || approvedDecimalPoint))
-                e.Handled = true;
-        }
-
-        #region ButtonsEvents
-        private void _buttonPreviousDiscussion_Click(object sender, RoutedEventArgs e)
-        {
-            PreviousDiscussion();
-        }
-
-        private void _buttonNextDiscussion_Click(object sender, RoutedEventArgs e)
-        {
-            NextDiscussion();
-        }
-
-        private void _buttonDropDiscussion_Click(object sender, RoutedEventArgs e)
-        {
-            DropDiscussion();
-        }
-
-        private void _buttonRemoveDiscussionFiles_Click(object sender, RoutedEventArgs e)
-        {
-            RemoveDiscussionFiles();
-        }
-
-        private void _buttonTextEditMode_Click(object sender, RoutedEventArgs e)
-        {
-            TextEditMode();
-        }
-
-        private void _buttonDesignerMode_Click(object sender, RoutedEventArgs e)
-        {
-            DesignerMode();
-        }
-
-        private async void _buttonScreenshot_Click(object sender, RoutedEventArgs e)
-        {
-            await Screenshot();
-        }
-
-        private async void _buttonScreenshotAll_Click(object sender, RoutedEventArgs e)
-        {
-            await ScreenshotAll();
-        }
-
-        private async void _buttonSpeak_Click(object sender, RoutedEventArgs e)
-        {
-            await Speak();
-        }
-
-        private async void _buttonSpeakAll_Click(object sender, RoutedEventArgs e)
-        {
-            await SpeakAll();
-        }
-
-        private async void _buttonScreenshotSpeak_Click(object sender, RoutedEventArgs e)
-        {
-            await ScreenshotSpeak();
-        }
-
-        private async void _buttonScreenshotSpeakAll_Click(object sender, RoutedEventArgs e)
-        {
-            await ScreenshotSpeakAll();
-        }
-
-        private void _buttonPlaySpeech_Click(object sender, RoutedEventArgs e)
-        {
-            if (_isSpeechPlayed)
-                StopSpeech();
-            else
-                PlaySpeech();
-        }
-
-        private void _buttonCreateVideo_Click(object sender, RoutedEventArgs e)
-        {
-            CreateVideo();   
-        }
-
-        private void _buttonPlayVideo_Click(object sender, RoutedEventArgs e)
-        {
-            if (!_isVideoPlayed)
-                PlayVideo();
-            else
-                StopVideo();
-        }
-
-        private void _videoPlayer_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            StopVideo();
-        }
-
-        private void _speechTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-        {
-            StopSpeech();
-        }
-        #endregion ButtonsEvents
 
         private void RemoveDiscussionFiles()
         {
@@ -444,7 +301,7 @@ namespace mikroblog.videos_designer
         {
             StopVideo();
             _videoPlayer.Source = null;
-            Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH);
+            Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH, GetCurrentDiscussionId());
         }
 
         private void PlayVideo()
@@ -453,8 +310,7 @@ namespace mikroblog.videos_designer
             if (discussionId == null)
                 return;
 
-            //string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, discussionId), ".mp4");
-            string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, "video"), ".mp4");
+            string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, discussionId), ".mp4");
 
             if (!File.Exists(videoPath))
                 return;
@@ -462,7 +318,7 @@ namespace mikroblog.videos_designer
             ScreenshotViewerVideoPlayerVisibility(false);
 
             _videoPlayer.Source = new Uri(videoPath);
-            _videoPlayer.MediaEnded += _videoPlayer_MediaEnded;
+            _videoPlayer.MediaEnded += VideoPlayer_MediaEnded;
 
             _videoPlayer.Play();
             _isVideoPlayed = true;
@@ -508,11 +364,6 @@ namespace mikroblog.videos_designer
             DisableDesignerMode();
             CleanDesignerEntries();
             CleanScreenshotViewer();
-        }
-
-        private void Exit()
-        {
-            _window.Close();
         }
 
         private void PreviousDiscussion()
@@ -658,30 +509,6 @@ namespace mikroblog.videos_designer
             }
         }
 
-        #region WebView Events
-        private void InitializeWebViewEvents()
-        {
-            _webView.WebMessageReceived += _webView_WebMessageReceived;
-        }
-
-        private void _webView_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
-        {
-            try
-            {
-                var json = JsonSerializer.Deserialize<JsonObject>(e.WebMessageAsJson);
-
-                if (json == null)
-                    return;
-
-                ParseJsonMessage(json);
-            }
-            catch (Exception ex)
-            {
-                Log.WriteError($"Error when deserializing json, Exception - {ex.Message}");
-            }
-        }
-        #endregion WebView Events
-
         #region JS
         private void ParseJsonMessage(JsonObject json)
         {
@@ -769,7 +596,7 @@ namespace mikroblog.videos_designer
 
             rect.X = (int)(rect.X * displayScaling);
             rect.X += (int)_webView.Margin.Left;
-            rect.Y = (int)(rect.Y * displayScaling);
+            rect.Y = (int)(rect.Y * displayScaling) + (int)_webView.Margin.Top;
             rect.Width = (int)(rect.Width * displayScaling);
             rect.Height = (int)(rect.Height * displayScaling);
 
@@ -783,30 +610,29 @@ namespace mikroblog.videos_designer
             try
             {
                 Bitmap bitmap = new(rect.Width, rect.Height);
-                Graphics graphics = Graphics.FromImage(bitmap);
-
-                graphics.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size(rect.Width * 16 / 9, rect.Height * 16 / 9));
-
-
-                string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionVideoFolder(), (entryNumber + 1).ToString()), ".png");
-
-
-                Bitmap canvas = new Bitmap(1080, 1920);
-                using (var g = Graphics.FromImage(canvas))
+                using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
-                    g.Clear(System.Drawing.Color.Black);
+                    graphics.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size(rect.Width * 16 / 9, rect.Height * 16 / 9));
 
-                    var bitmapWidth = bitmap.Width * 16 / 9;
-                    var bitmapHeight = bitmap.Height * 16 / 9;
-                    g.DrawImage(bitmap, 540 - bitmapWidth / 2, 960 - bitmapHeight / 2, bitmapWidth, bitmapHeight);
+                    string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionVideoFolder(), (entryNumber + 1).ToString()), ".png");
 
-                    try
+                    Bitmap canvas = new Bitmap(1080, 1920);
+                    using (var g = Graphics.FromImage(canvas))
                     {
-                        canvas.Save(path, ImageFormat.Png);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.WriteError($"Couldn't save a screenshot {ex.Message}");
+                        g.Clear(System.Drawing.Color.Black);
+
+                        var bitmapWidth = bitmap.Width * 16 / 9;
+                        var bitmapHeight = bitmap.Height * 16 / 9;
+                        g.DrawImage(bitmap, 540 - bitmapWidth / 2, 960 - bitmapHeight / 2, bitmapWidth, bitmapHeight);
+
+                        try
+                        {
+                            canvas.Save(path, ImageFormat.Png);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.WriteError($"Couldn't save a screenshot {ex.Message}");
+                        }
                     }
                 }
             }
@@ -1028,6 +854,11 @@ namespace mikroblog.videos_designer
         }
 
         #endregion Discussions
+
+        private void _webView_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
+        {
+
+        }
     }
 }
 #pragma warning restore CS8602

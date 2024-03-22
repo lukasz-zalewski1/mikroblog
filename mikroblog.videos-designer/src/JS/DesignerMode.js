@@ -42,7 +42,6 @@ function addNewEntry(entryNode) {
     numberNode.innerText = entries.length + 1;
 
     entryNode.insertBefore(numberNode);
-    // entryNode.querySelector("div.wrapper").style.fontSize = "20px";
 
     entries.push({ node: entryNode, numberNode: numberNode });   
 

@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 using Microsoft.Web.WebView2.Wpf;
+using mikroblog.fast_quality_check;
 
 namespace mikroblog.videos_designer
 {
@@ -32,7 +33,10 @@ namespace mikroblog.videos_designer
         {
             string? script = Util.GetResource(name);
             if (script == null)
+            {
+                Log.WriteError($"Resource not found - {name}");
                 return;
+            }
 
             await webView.CoreWebView2.ExecuteScriptAsync(script);
         }
