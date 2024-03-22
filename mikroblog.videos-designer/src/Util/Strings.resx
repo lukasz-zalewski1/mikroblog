@@ -175,13 +175,13 @@
     <value>Stop Video</value>
   </data>
   <data name="LabelDiscussionId" xml:space="preserve">
-    <value>Discussion ID: </value>
+    <value>Discussion Id:</value>
   </data>
   <data name="LabelDiscussionNumber" xml:space="preserve">
-    <value>Discussion: </value>
+    <value>Discussion:</value>
   </data>
   <data name="LabelDiscussionQuality" xml:space="preserve">
-    <value>Quality: </value>
+    <value>Quality:</value>
   </data>
   <data name="LabelExistingDiscussionFiles" xml:space="preserve">
     <value>Existing files in the discussion folder, do you want to remove them?</value>

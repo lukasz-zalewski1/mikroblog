@@ -70,54 +70,8 @@ namespace mikroblog.videos_designer
             UpdateControls();
         }
 
-        private void UpdateControls()
-        {
-            UpdateGridRemoveDiscussionFiles();
 
-            UpdateLabelDiscussionId();
-            UpdateLabelDiscussionNumber();
-            UpdateLabelDiscussionQuality();
-        }
-
-        private void UpdateGridRemoveDiscussionFiles()
-        {
-            var discussionId = GetCurrentDiscussionId();
-
-            if (discussionId == null)
-            {
-                _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            if (!Directory.Exists(GetCurrentDiscussionVideoFolder()))
-            {
-                _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            if (Directory.GetFiles(GetCurrentDiscussionVideoFolder()).Length <= 0)
-            {
-                _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            _gridRemoveDiscussionFiles.Visibility = Visibility.Visible;
-        }
-
-        private void UpdateLabelDiscussionId()
-        {
-            _labelDiscussionId.Content = $"Discussion Id: {GetCurrentDiscussionId()}";
-        }
-    
-        private void UpdateLabelDiscussionNumber()
-        {
-            _labelDiscussionNumber.Content = $"Discussion: {_currentDiscussion + 1} / {DiscussionsCount}";
-        }
-
-        private void UpdateLabelDiscussionQuality()
-        {
-            _labelDiscussionQuality.Content = $"Quality: {GetCurrentDiscussionRating()}";
-        }
+        
         #endregion Controls
 
         private void RemoveDiscussionFiles()
@@ -135,41 +89,11 @@ namespace mikroblog.videos_designer
             {
                 Log.WriteError($"Removing discussion directory wasn't possible, Exception - {ex.Message}");
             }
-
-            UpdateSpeechButton();
-            UpdateScreenshotViewer();
+          
             UpdateControls();
         }
 
-        private void UpdateScreenshotViewer()
-        {
-            if (_listboxEntries.SelectedItem == null)
-            {
-                CleanScreenshotViewer();
-                return;
-            }
-
-            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".png");
-
-            if (!File.Exists(path))
-            {
-                CleanScreenshotViewer();
-                return;
-            }
-
-            byte[] array = File.ReadAllBytes(path);
-
-            using (var memoryStream = new MemoryStream(array))
-            {
-                BitmapImage bitmapImage = new();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memoryStream;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                _screenshotViewer.Source = bitmapImage;
-            }        
-        }
+        
 
         private void UpdatePlaySpeechControls()
         {
@@ -263,7 +187,7 @@ namespace mikroblog.videos_designer
             StartSpeechTimer();
 
             _isSpeechPlayed = true;
-            UpdateSpeechButton();
+            UpdateControls();
         }
 
         private void StartSpeechTimer()
@@ -273,18 +197,7 @@ namespace mikroblog.videos_designer
 
             _speechTimer.Interval = interval * 1000;
             _speechTimer.Start();
-        }
-
-        private void UpdateSpeechButton()
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                if (_isSpeechPlayed)
-                    _buttonPlaySpeech.Content = "Stop Speech";
-                else
-                    _buttonPlaySpeech.Content = "Play Speech";
-            }));
-        }
+        }    
 
         private void StopSpeech()
         {
@@ -292,7 +205,8 @@ namespace mikroblog.videos_designer
             _soundPlayer.Stop();
 
             _isSpeechPlayed = false;
-            UpdateSpeechButton();
+
+            UpdateControls();
         }
 
         private void CreateVideo()
@@ -304,11 +218,7 @@ namespace mikroblog.videos_designer
 
         private void PlayVideo()
         {
-            var discussionId = GetCurrentDiscussionId();
-            if (discussionId == null)
-                return;
-
-            string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, discussionId), ".mp4");
+            string videoPath = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId()), ".mp4");
 
             if (!File.Exists(videoPath))
                 return;
@@ -384,7 +294,7 @@ namespace mikroblog.videos_designer
         {
             StopSpeech();
 
-            OpenDiscussion(GetCurrentDiscussionId());
+            OpenCurrentDiscussion();
 
             CleanupModesChanges();
 
@@ -394,7 +304,8 @@ namespace mikroblog.videos_designer
         private void DropDiscussion()
         {
             var currentDiscussionId = GetCurrentDiscussionId();
-            if (currentDiscussionId != null)
+
+            if (!string.IsNullOrEmpty(currentDiscussionId))
             {
                 _configQualityDiscussions.Remove(currentDiscussionId);
 
@@ -402,11 +313,10 @@ namespace mikroblog.videos_designer
                     _currentDiscussion -= 1;
             }
 
-            currentDiscussionId = GetCurrentDiscussionId();
-            if (currentDiscussionId == null)
+            if (string.IsNullOrEmpty(GetCurrentDiscussionId()))
                 NoMoreDiscussions();
             else
-                OpenDiscussion(currentDiscussionId);
+                OpenCurrentDiscussion();
 
             UpdateControls();
         }
@@ -640,7 +550,6 @@ namespace mikroblog.videos_designer
             }
 
             UpdateControls();
-            UpdateScreenshotViewer();
         }
 
         private async void JsonMessageSpeechData(JsonObject json)
@@ -715,12 +624,7 @@ namespace mikroblog.videos_designer
 
         private string GetCurrentDiscussionVideoFolder()
         {
-            var discussionId = GetCurrentDiscussionId();
-
-            if (discussionId == null)
-                return string.Empty;
-
-            string discussionPath = Path.Combine(DISCUSSIONS_PATH, discussionId);
+            string discussionPath = Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId());
 
             if (!Directory.Exists(discussionPath))
                 Directory.CreateDirectory(discussionPath);
@@ -801,15 +705,12 @@ namespace mikroblog.videos_designer
         #region WebView
         private void InitializeMikroblogBrowser()
         {
-            OpenDiscussion(GetCurrentDiscussionId());
+            OpenCurrentDiscussion();
         }
 
-        private void OpenDiscussion(string? currentDiscussionId)
+        private void OpenCurrentDiscussion()
         {
-            if (currentDiscussionId == null)
-                return;
-
-            var uri = new Uri(DiscussionDownloader.DISCUSSION_NAME_TEMPLATE + currentDiscussionId);
+            var uri = new Uri($"{DiscussionDownloader.DISCUSSION_NAME_TEMPLATE}{GetCurrentDiscussionId()}");
             try
             {
                 _webView.Source = uri;
@@ -827,36 +728,37 @@ namespace mikroblog.videos_designer
         #endregion WebView
 
         #region Discussions
-        private string? GetCurrentDiscussionId()
+        private string GetCurrentDiscussionId()
         {
             if (_configQualityDiscussions.Lines == null)
             {
                 Log.WriteError("QualityDiscussions Config is null");
-                return null;
+                return string.Empty;
             }
 
             if (_configQualityDiscussions.Lines.Count == 0)
-                return null;
+                return string.Empty;
 
-            return _configQualityDiscussions.Lines.ElementAt(_currentDiscussion).Key;
+            try
+            {
+                var result = _configQualityDiscussions.Lines.ElementAt(_currentDiscussion).Key;
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError($"Couldn't get current discussion Id, Exception - {ex.Message}");
+                return string.Empty;
+            }
         }
 
-        private string? GetCurrentDiscussionRating()
+        private string GetCurrentDiscussionRating()
         {
-            var discussionId = GetCurrentDiscussionId();
-
-            if (discussionId == null)
-                return null;
-
-            return _configQualityDiscussions.GetString(discussionId);
+            var rating = _configQualityDiscussions.GetString(GetCurrentDiscussionId());
+            return string.IsNullOrEmpty(rating) ? string.Empty : rating;
         }
 
         #endregion Discussions
-
-        private void _webView_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
-        {
-
-        }
     }
 }
 #pragma warning restore CS8602

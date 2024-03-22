@@ -16,63 +16,63 @@
             <Grid Name="_gridMenu" Width="580" Height="380" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="55,30,0,0">
                 <Border BorderThickness="2" Width="580" Height="380" HorizontalAlignment="Left" VerticalAlignment="Top" />
 
-                <Label x:Name="_labelDiscussionNumber"  FontSize="16" Content="{x:Static r:Resources.LabelDiscussionNumber}"    Width="240" Height="30"     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" />
-                <Label x:Name="_labelDiscussionId"      FontSize="16" Content="{x:Static r:Resources.LabelDiscussionId}"        Width="300" Height="30"     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0" />
-                <Label x:Name="_labelDiscussionQuality" FontSize="16" Content="{x:Static r:Resources.LabelDiscussionQuality}"   Width="345" Height="30"     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0" />
+                <Label x:Name="_labelDiscussionNumber"  FontSize="16" Content="{x:Static r:Strings.LabelDiscussionNumber}"    Width="240" Height="30"     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" />
+                <Label x:Name="_labelDiscussionId"      FontSize="16" Content="{x:Static r:Strings.LabelDiscussionId}"        Width="300" Height="30"     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0" />
+                <Label x:Name="_labelDiscussionQuality" FontSize="16" Content="{x:Static r:Strings.LabelDiscussionQuality}"   Width="345" Height="30"     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0" />
 
-                <Button x:Name="_buttonPreviousDiscussion"  FontSize="16" Content="{x:Static r:Resources.ButtonContentPreviousDiscussion}"  Width="30" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="280,10,0,0"    
+                <Button x:Name="_buttonPreviousDiscussion"  FontSize="16" Content="{x:Static r:Strings.ButtonContentPreviousDiscussion}"  Width="30" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="280,10,0,0"    
                         Click="ButtonPreviousDiscussion_Click" />
-                <Button x:Name="_buttonNextDiscussion"      FontSize="16" Content="{x:Static r:Resources.ButtonContentNextDiscussion}"      Width="30" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="320,10,0,0" 
+                <Button x:Name="_buttonNextDiscussion"      FontSize="16" Content="{x:Static r:Strings.ButtonContentNextDiscussion}"      Width="30" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="320,10,0,0" 
                         Click="ButtonNextDiscussion_Click" />
-                <Button x:Name="_buttonDropDiscussion"      FontSize="16" Content="{x:Static r:Resources.ButtonContentDropDiscussion}"      Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,10,0,0" 
+                <Button x:Name="_buttonDropDiscussion"      FontSize="16" Content="{x:Static r:Strings.ButtonContentDropDiscussion}"      Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,10,0,0" 
                         Click="ButtonDropDiscussion_Click" />
 
                 <Grid x:Name="_gridRemoveDiscussionFiles" Width="570" Height="80" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,170,0,0">
-                    <Label x:Name="_labelExistingDiscussionFiles" FontSize="16" Content="{x:Static r:Resources.LabelExistingDiscussionFiles}"                   Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" 
+                    <Label x:Name="_labelExistingDiscussionFiles" FontSize="16" Content="{x:Static r:Strings.LabelExistingDiscussionFiles}"                   Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" 
                            Foreground="{DynamicResource WarningColor}" />
-                    <Button x:Name="_buttonRemoveDiscussionFiles" FontSize="16" Content="{x:Static r:Resources.ButtonContentRemoveDiscussionFiles}" Width="200" Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,0"    
+                    <Button x:Name="_buttonRemoveDiscussionFiles" FontSize="16" Content="{x:Static r:Strings.ButtonContentRemoveDiscussionFiles}" Width="200" Height="30" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,0"    
                            Foreground="{DynamicResource WarningColor}" Click="ButtonRemoveDiscussionFiles_Click" />
                 </Grid>
 
-                <Button x:Name="_buttonTextEditMode" FontSize="16" Content="{x:Static r:Resources.ButtonContentEnableTextEditMode}" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="60,330,0,0"
+                <Button x:Name="_buttonTextEditMode" FontSize="16" Content="{x:Static r:Strings.ButtonContentEnableTextEditMode}" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="60,330,0,0"
                        Click="ButtonTextEditMode_Click" />
-                <Button x:Name="_buttonDesignerMode" FontSize="16" Content="{x:Static r:Resources.ButtonContentEnableDesignerMode}"  Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="320,330,0,0"
+                <Button x:Name="_buttonDesignerMode" FontSize="16" Content="{x:Static r:Strings.ButtonContentEnableDesignerMode}"  Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="320,330,0,0"
                        Click="ButtonDesignerMode_Click" />
             </Grid>
 
             <Grid x:Name="_gridDesignerMenu" Width="580" Height="500" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="55,0,0,30">
-                <Label FontSize="26" FontStyle="Italic" FontWeight="DemiBold" Content="{x:Static r:Resources.LabelVideoDesigner}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" />
+                <Label FontSize="26" FontStyle="Italic" FontWeight="DemiBold" Content="{x:Static r:Strings.LabelVideoDesigner}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" />
 
                 <Border x:Name="_borderDesignerMode" BorderThickness="2" Width="580" Height="450" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,50,0,0"/>
 
                 <ListBox x:Name="_listboxEntries" FontSize="16" HorizontalContentAlignment="Left" Width="50" Height="430" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,0"
                          SelectionChanged="ListboxEntries_SelectionChanged"/>
 
-                <Button x:Name="_buttonScreenshot"          FontSize="16" Content="{x:Static r:Resources.ButtonContentScreenshot}"         Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,60,0,0" 
+                <Button x:Name="_buttonScreenshot"          FontSize="16" Content="{x:Static r:Strings.ButtonContentScreenshot}"         Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,60,0,0" 
                        Click="ButtonScreenshot_Click" />
-                <Button x:Name="_buttonScreenshotAll"       FontSize="16" Content="{x:Static r:Resources.ButtonContentScreenshotAll}"      Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,60,0,0" 
+                <Button x:Name="_buttonScreenshotAll"       FontSize="16" Content="{x:Static r:Strings.ButtonContentScreenshotAll}"      Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,60,0,0" 
                        Click="ButtonScreenshotAll_Click" />
-                <Button x:Name="_buttonSpeak"               FontSize="16" Content="{x:Static r:Resources.ButtonContentSpeak}"              Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,110,0,0" 
+                <Button x:Name="_buttonSpeak"               FontSize="16" Content="{x:Static r:Strings.ButtonContentSpeak}"              Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,110,0,0" 
                        Click="ButtonSpeak_Click" />
-                <Button x:Name="_buttonSpeakAll"            FontSize="16" Content="{x:Static r:Resources.ButtonContentSpeakAll}"           Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,110,0,0" 
+                <Button x:Name="_buttonSpeakAll"            FontSize="16" Content="{x:Static r:Strings.ButtonContentSpeakAll}"           Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,110,0,0" 
                        Click="ButtonSpeakAll_Click" />
-                <Button x:Name="_buttonScreenshotSpeak"     FontSize="16" Content="{x:Static r:Resources.ButtonContentScreenshotSpeak}"    Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,160,0,0" 
+                <Button x:Name="_buttonScreenshotSpeak"     FontSize="16" Content="{x:Static r:Strings.ButtonContentScreenshotSpeak}"    Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,160,0,0" 
                        Click="ButtonScreenshotSpeak_Click" />
-                <Button x:Name="_buttonScreenshotSpeakAll"  FontSize="16" Content="{x:Static r:Resources.ButtonContentScreenshotSpeakAll}" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="370,160,0,0" 
+                <Button x:Name="_buttonScreenshotSpeakAll"  FontSize="16" Content="{x:Static r:Strings.ButtonContentScreenshotSpeakAll}" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="370,160,0,0" 
                        Click="ButtonScreenshotSpeakAll_Click" />
 
-                <Button x:Name="_buttonPlaySpeech"      FontSize="16"                                                                                               Content="{x:Static r:Resources.ButtonContentPlaySpeech}" Width="200" Height="30"                                      
+                <Button x:Name="_buttonPlaySpeech"      FontSize="16"                                                                                               Content="{x:Static r:Strings.ButtonContentPlaySpeech}" Width="200" Height="30"                                      
                        HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="370,300,0,0"  
                        IsEnabled="False" Click="ButtonPlaySpeech_Click" />
-                <Label                                  FontSize="16" FontStyle="Italic" HorizontalContentAlignment="Center"                                        Content="{x:Static r:Resources.LabelSpeechLength}"       Width="200"                                 
+                <Label                                  FontSize="16" FontStyle="Italic" HorizontalContentAlignment="Center"                                        Content="{x:Static r:Strings.LabelSpeechLength}"       Width="200"                                 
                        HorizontalAlignment="Left" VerticalAlignment="Top"   Margin="140,265,0,0" />
                 <TextBox x:Name="_textboxSpeechLength"  FontSize="16"                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"                                                               Width="200" Height="30"  
                        HorizontalAlignment="Left" VerticalAlignment="Top"   Margin="140,300,0,0" 
                        IsEnabled="False" TextChanged="TextboxSpeechLength_TextChanged" PreviewTextInput="TextboxSpeechLength_PreviewTextInput"/>
 
-                <Button x:Name="_buttonCreateVideo" FontSize="16" Content="{x:Static r:Resources.ButtonContentCreateVideo}" Width="200" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,458,0,0" 
+                <Button x:Name="_buttonCreateVideo" FontSize="16" Content="{x:Static r:Strings.ButtonContentCreateVideo}" Width="200" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,458,0,0" 
                         Click="ButtonCreateVideo_Click" />
-                <Button x:Name="_buttonPlayVideo"   FontSize="16" Content="{x:Static r:Resources.ButtonContentPlayVideo}"   Width="200" Height="30"    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,458,0,0" 
+                <Button x:Name="_buttonPlayVideo"   FontSize="16" Content="{x:Static r:Strings.ButtonContentPlayVideo}"   Width="200" Height="30"    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,458,0,0" 
                         Click="ButtonPlayVideo_Click" />
             </Grid>
 

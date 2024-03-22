@@ -9,6 +9,9 @@ using System.Windows.Input;
 
 namespace mikroblog.videos_designer
 {
+    /// <summary>
+    /// Part of VideosDesignerClass responsible for events.
+    /// </summary>
     public partial class VideosDesignerWindow : Window
     {
         /// <summary>
@@ -82,7 +85,9 @@ namespace mikroblog.videos_designer
         private void ListboxEntries_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ScreenshotViewerVideoPlayerVisibility(true);
-            UpdateScreenshotViewer();
+
+            UpdateControls();
+
             UpdatePlaySpeechControls();
             UpdateSpeechLengthTextbox();
         }
