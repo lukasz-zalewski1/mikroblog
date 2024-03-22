@@ -12,17 +12,10 @@ namespace mikroblog.videos_designer
     public partial class VideosDesignerWindow : Window
     {
         /// <summary>
-        /// Initializes
+        /// Initializes non-control events.
         /// </summary>
         private void InitializeEvents()
         {
-            _window.KeyDown += OnKeyDown;
-
-            _listboxEntries.SelectionChanged += ListboxEntries_SelectionChanged;
-
-            _textboxSpeechLength.TextChanged += TextboxSpeechLength_TextChanged;
-            _textboxSpeechLength.PreviewTextInput += TextboxSpeechLength_PreviewTextInput;
-
             _speechTimer.Elapsed += SpeechTimer_Elapsed;
         }      
 

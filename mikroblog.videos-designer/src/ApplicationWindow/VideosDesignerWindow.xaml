@@ -6,7 +6,8 @@
         xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Name="_window" x:Class="mikroblog.videos_designer.VideosDesignerWindow"
         xmlns:r="clr-namespace:mikroblog.videos_designer"
         mc:Ignorable="d"
-        Title="Mikroblog Videos Designer" Width="1920" Height="1080" WindowStyle="None" WindowState="Maximized">
+        Title="Mikroblog Videos Designer" Width="1920" Height="1080" WindowStyle="None" WindowState="Maximized"
+        KeyDown="OnKeyDown">
     <Viewbox Stretch="Fill">
         <Grid x:Name="_grid" Width="1920" Height="1080" Background="{DynamicResource BackgroundColor}">
             <Wpf:WebView2 Name="_webView" Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="1310,10,0,0" 
@@ -44,7 +45,8 @@
 
                 <Border x:Name="_borderDesignerMode" BorderThickness="2" Width="580" Height="450" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,50,0,0"/>
 
-                <ListBox x:Name="_listboxEntries" FontSize="16" HorizontalContentAlignment="Left" Width="50" Height="430" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,0" />
+                <ListBox x:Name="_listboxEntries" FontSize="16" HorizontalContentAlignment="Left" Width="50" Height="430" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,0"
+                         SelectionChanged="ListboxEntries_SelectionChanged"/>
 
                 <Button x:Name="_buttonScreenshot"          FontSize="16" Content="{x:Static r:Resources.ButtonContentScreenshot}"         Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,60,0,0" 
                        Click="ButtonScreenshot_Click" />
@@ -66,7 +68,7 @@
                        HorizontalAlignment="Left" VerticalAlignment="Top"   Margin="140,265,0,0" />
                 <TextBox x:Name="_textboxSpeechLength"  FontSize="16"                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"                                                               Width="200" Height="30"  
                        HorizontalAlignment="Left" VerticalAlignment="Top"   Margin="140,300,0,0" 
-                       IsEnabled="False" PreviewTextInput="TextboxSpeechLength_PreviewTextInput"/>
+                       IsEnabled="False" TextChanged="TextboxSpeechLength_TextChanged" PreviewTextInput="TextboxSpeechLength_PreviewTextInput"/>
 
                 <Button x:Name="_buttonCreateVideo" FontSize="16" Content="{x:Static r:Resources.ButtonContentCreateVideo}" Width="200" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,458,0,0" 
                         Click="ButtonCreateVideo_Click" />
