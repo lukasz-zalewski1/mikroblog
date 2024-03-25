@@ -108,13 +108,13 @@ namespace mikroblog.videos_designer
                     return;
                 }
 
-                if (!Directory.Exists(GetCurrentDiscussionVideoFolder()))
+                if (!Directory.Exists(GetCurrentDiscussionFolder()))
                 {
                     _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
                     return;
                 }
 
-                if (Directory.GetFiles(GetCurrentDiscussionVideoFolder()).Length <= 0)
+                if (Directory.GetFiles(GetCurrentDiscussionFolder()).Length <= 0)
                 {
                     _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
                     return;
@@ -169,7 +169,7 @@ namespace mikroblog.videos_designer
             }
 
             _textboxSpeechLength.IsEnabled = true;
-            _textboxSpeechLength.Text = ReadSpeechLengthFromFile(pathSpeechLength);
+            _textboxSpeechLength.Text = ReadSpeechLengthFromFile();
             _buttonPlaySpeech.IsEnabled = true;
         }
 

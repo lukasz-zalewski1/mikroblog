@@ -13,6 +13,9 @@ namespace mikroblog.videos_designer
 
         private Mode _mode;
 
+        private const string RESOURCE_NAME_JS_EDIT_MODE = "mikroblog.videos_designer.src.JS.EditMode.js";
+        private const string RESOURCE_NAME_JS_DESIGNER_MODE = "mikroblog.videos_designer.src.JS.DesignerMode.js";
+
         /// <summary>
         /// Enables Text Edit Mode, executes "EditMode.js" script and calls "enableEditMode" JS function.
         /// </summary>
@@ -86,7 +89,7 @@ namespace mikroblog.videos_designer
         /// <summary>
         /// Calls <see cref="DisableTextEditMode"/>, <see cref="DisableDesignerMode"/>, <see cref="CleanDesignerEntries"/> and <see cref="CleanScreenshotViewer"/> methods.
         /// </summary>
-        private void CleanupModesChanges()
+        private void CleanModesChanges()
         {
             DisableTextEditMode();
             DisableDesignerMode();

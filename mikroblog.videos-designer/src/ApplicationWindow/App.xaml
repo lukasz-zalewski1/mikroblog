@@ -40,20 +40,20 @@
             
             <Style TargetType="Border">
                 <Setter Property="CornerRadius" Value="10"></Setter>
-                <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
-                <Setter Property="Background" Value="{DynamicResource UIElementBackgroundColor}"></Setter>
+                <Setter Property="BorderBrush"  Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Background"   Value="{DynamicResource UIElementBackgroundColor}"></Setter>
             </Style>
             
             <Style TargetType="ListBox">
-                <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
-                <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
-                <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
+                <Setter Property="BorderBrush"  Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Background"   Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Foreground"   Value="{DynamicResource TextColor}"></Setter>
             </Style>
 
             <Style TargetType="TextBox">
-                <Setter Property="BorderBrush" Value="{DynamicResource ButtonColor}"></Setter>
-                <Setter Property="Background" Value="{DynamicResource ButtonColor}"></Setter>
-                <Setter Property="Foreground" Value="{DynamicResource TextColor}"></Setter>
+                <Setter Property="BorderBrush"  Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Background"   Value="{DynamicResource ButtonColor}"></Setter>
+                <Setter Property="Foreground"   Value="{DynamicResource TextColor}"></Setter>
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Background" Value="{DynamicResource DisabledColor}"></Setter>

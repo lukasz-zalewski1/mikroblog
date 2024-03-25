@@ -122,11 +122,11 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls <see cref="ScreenshotSpeak"/> method.
+        /// Calls <see cref="ScreenshotAndSpeak"/> method.
         /// </summary>
         private async void ButtonScreenshotSpeak_Click(object sender, RoutedEventArgs e)
         {
-            await ScreenshotSpeak();
+            await ScreenshotAndSpeak();
         }
 
         /// <summary>
