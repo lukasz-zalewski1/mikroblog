@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 
 using mikroblog.fast_quality_check;
 
@@ -13,10 +11,11 @@ namespace mikroblog.videos_designer
         private enum ControlUpdateType
         {
             All,
+            ModeChange,
             Designer,
             Screenshot,
             Speech,
-            Video
+            Video,         
         }
 
         private enum ScreenshotViewerAndVideoPlayerVisibilityType
@@ -35,6 +34,9 @@ namespace mikroblog.videos_designer
             UpdateControls(ControlUpdateType.All);
         }
 
+        /// <summary>
+        /// Calls methods which update controls depending on <paramref name="controlUpdateType"/>.
+        /// </summary>
         private void UpdateControls(ControlUpdateType controlUpdateType)
         {
             if (controlUpdateType == ControlUpdateType.All)
@@ -47,6 +49,9 @@ namespace mikroblog.videos_designer
             // Always
             UpdateGridRemoveDiscussionFiles();
 
+            if (controlUpdateType == ControlUpdateType.All || controlUpdateType == ControlUpdateType.ModeChange)
+                UpdateButtonsContentModes();
+           
             if (controlUpdateType == ControlUpdateType.All || controlUpdateType == ControlUpdateType.Designer || controlUpdateType == ControlUpdateType.Speech)
                 UpdateControlsSpeech();
 
@@ -54,7 +59,7 @@ namespace mikroblog.videos_designer
                 UpdateScreenshotViewer();
 
             if (controlUpdateType == ControlUpdateType.All || controlUpdateType == ControlUpdateType.Designer || controlUpdateType == ControlUpdateType.Video)
-                UpdateButtonPlayVideoContent();
+                UpdateControlsPlayVideo();
         }
 
         /// <summary>
@@ -120,6 +125,28 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
+        /// Updates content of <see cref="_buttonTextEditMode"/> and <see cref="_buttonDesignerMode"/> content depending on <see cref="_mode"/>.
+        /// </summary>
+        private void UpdateButtonsContentModes()
+        {
+            switch (_mode)
+            {
+                case Mode.None:
+                    _buttonTextEditMode.Content = Strings.ButtonContentEnableTextEditMode;
+                    _buttonDesignerMode.Content = Strings.ButtonContentEnableDesignerMode;
+                    break;
+                case Mode.TextEdit:
+                    _buttonTextEditMode.Content = Strings.ButtonContentDisableTextEditMode;
+                    _buttonDesignerMode.Content = Strings.ButtonContentEnableDesignerMode;
+                    break;
+                case Mode.Designer:
+                    _buttonTextEditMode.Content = Strings.ButtonContentEnableTextEditMode;
+                    _buttonDesignerMode.Content = Strings.ButtonContentDisableDesignerMode;
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Calls <see cref="UpdateButtonPlaySpeechContent"/> and then checks if audio and speech length files exist. If they do it enables speech controls, if not it disables them.
         /// </summary>
         private void UpdateControlsSpeech()
@@ -158,6 +185,24 @@ namespace mikroblog.videos_designer
                 else
                     _buttonPlaySpeech.Content = Strings.ButtonContentPlaySpeech;
             }));
+        }
+
+        /// <summary>
+        /// Calls <see cref="UpdateButtonPlayVideoContent"/> and enables or disabled <see cref="_buttonPlayVideo"/> depending on video existance.
+        /// </summary>
+        private void UpdateControlsPlayVideo()
+        {
+            UpdateButtonPlayVideoContent();
+
+            string pathVideo = Path.ChangeExtension(Path.Combine(VIDEOS_PATH, GetCurrentDiscussionId()), ".mp4");
+
+            if (!File.Exists(pathVideo))
+            {
+                _buttonPlayVideo.IsEnabled = false;
+                return;
+            }
+
+            _buttonPlayVideo.IsEnabled = true;
         }
 
         /// <summary>

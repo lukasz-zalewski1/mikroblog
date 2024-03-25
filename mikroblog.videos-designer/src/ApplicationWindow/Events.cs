@@ -1,17 +1,11 @@
-﻿using Microsoft.Web.WebView2.Core;
-using mikroblog.fast_quality_check;
-using System.Text.Json.Nodes;
-using System.Text.Json;
-using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using Microsoft.Web.WebView2.Core;
+
 namespace mikroblog.videos_designer
 {
-    /// <summary>
-    /// Part of VideosDesignerClass responsible for events.
-    /// </summary>
     public partial class VideosDesignerWindow : Window
     {
         /// <summary>
@@ -32,7 +26,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls PreviousDiscussion method.
+        /// Calls <see cref="PreviousDiscussion"/> method.
         /// </summary>
         private void ButtonPreviousDiscussion_Click(object sender, RoutedEventArgs e)
         {
@@ -40,7 +34,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls NextDiscussion method.
+        /// Calls <see cref="NextDiscussion"/> method.
         /// </summary>
         private void ButtonNextDiscussion_Click(object sender, RoutedEventArgs e)
         {
@@ -48,7 +42,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls DropDiscussion method.
+        /// Calls <see cref="DropDiscussion"/> method.
         /// </summary>
         private void ButtonDropDiscussion_Click(object sender, RoutedEventArgs e)
         {
@@ -56,7 +50,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls RemoveDiscussionFiles method.
+        /// Calls <see cref="RemoveDiscussionFiles"/> method.
         /// </summary>
         private void ButtonRemoveDiscussionFiles_Click(object sender, RoutedEventArgs e)
         {
@@ -64,23 +58,29 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls TextEditMode method.
+        /// Calls <see cref="EnableTextEditMode"/> or <see cref="DisableTextEditMode"/> method depending on <see cref="_mode"/> value.
         /// </summary>
         private void ButtonTextEditMode_Click(object sender, RoutedEventArgs e)
         {
-            TextEditMode();
+            if (_mode != Mode.TextEdit)
+                EnableTextEditMode();
+            else
+                DisableTextEditMode();
         }
 
         /// <summary>
-        /// Calls DesignerMode method.
+        /// Calls <see cref="EnableDesignerMode"/> or <see cref="DisableDesignerMode"/> method depending on <see cref="_mode"/> value.
         /// </summary>
         private void ButtonDesignerMode_Click(object sender, RoutedEventArgs e)
         {
-            DesignerMode();
+            if (_mode != Mode.Designer)
+                EnableDesignerMode();
+            else
+                DisableDesignerMode();
         }
 
         /// <summary>
-        /// TODO
+        /// Calls <see cref="ScreenshotViewerAndVideoPlayerVisibility(ScreenshotViewerAndVideoPlayerVisibilityType.ShowScreenshotViewer)"/> and <see cref="UpdateControls(ControlUpdateType.Designer)"/>.
         /// </summary>
         private void ListboxEntries_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -90,7 +90,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls Screenshot method.
+        /// Calls <see cref="Screenshot"/> method.
         /// </summary>
         private async void ButtonScreenshot_Click(object sender, RoutedEventArgs e)
         {
@@ -98,7 +98,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls ScreenshotAll method.
+        /// Calls <see cref="ScreenshotAll"/> method.
         /// </summary>
         private async void ButtonScreenshotAll_Click(object sender, RoutedEventArgs e)
         {
@@ -106,7 +106,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls Speak method.
+        /// Calls <see cref="Speak"/> method.
         /// </summary>
         private async void ButtonSpeak_Click(object sender, RoutedEventArgs e)
         {
@@ -114,7 +114,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls SpeakAll method.
+        /// Calls <see cref="SpeakAll"/> method.
         /// </summary>
         private async void ButtonSpeakAll_Click(object sender, RoutedEventArgs e)
         {
@@ -122,7 +122,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls ScreenshotSpeak method.
+        /// Calls <see cref="ScreenshotSpeak"/> method.
         /// </summary>
         private async void ButtonScreenshotSpeak_Click(object sender, RoutedEventArgs e)
         {
@@ -130,7 +130,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls ScreenshotSpeakAll method.
+        /// Calls <see cref="ScreenshotSpeakAll"/> method.
         /// </summary>
         private async void ButtonScreenshotSpeakAll_Click(object sender, RoutedEventArgs e)
         {
@@ -138,7 +138,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls UpdateSpeechLengthFile method.
+        /// Calls <see cref="UpdateSpeechLengthFile"/> method.
         /// </summary>
         private void TextboxSpeechLength_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -163,7 +163,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls method StopSpeech or PlaySpeech depending on _isSpeechPlayed value.
+        /// Calls method <see cref="StopSpeech"/> or <see cref="PlaySpeech"/> depending on <see cref="_isSpeechPlayed"/> value.
         /// </summary>
         private void ButtonPlaySpeech_Click(object sender, RoutedEventArgs e)
         {
@@ -174,7 +174,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls StopSpeech method.
+        /// Calls <see cref="StopSpeech"/> method.
         /// </summary>
         private void SpeechTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
@@ -182,7 +182,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls CreateVideo method.
+        /// Calls <see cref="CreateVideo"/> method.
         /// </summary>
         private void ButtonCreateVideo_Click(object sender, RoutedEventArgs e)
         {
@@ -190,7 +190,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls method StopVideo or PlayVideo depending on _isVideoPlayed
+        /// Calls method <see cref="StopVideo"/> or <see cref="PlayVideo"/> depending on <see cref="_isVideoPlayed"/> value
         /// </summary>
         private void ButtonPlayVideo_Click(object sender, RoutedEventArgs e)
         {
@@ -201,28 +201,19 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Calls StopVideo method.
+        /// Calls <see cref="StopVideo"/> method.
         /// </summary>
         private void VideoPlayer_MediaEnded(object sender, RoutedEventArgs e)
         {
             StopVideo();
         }
 
+        /// <summary>
+        /// Calls <see cref="ParseJsonMessage"/> with received message from <see cref="_webView"/> as parameter.
+        /// </summary>
         private void WebView_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
-            try
-            {
-                var json = JsonSerializer.Deserialize<JsonObject>(e.WebMessageAsJson);
-
-                if (json == null)
-                    return;
-
-                ParseJsonMessage(json);
-            }
-            catch (Exception ex)
-            {
-                Log.WriteError($"Error when deserializing json, Exception - {ex.Message}");
-            }
+            ParseJsonMessage(e.WebMessageAsJson);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,20 +16,11 @@ namespace mikroblog.videos_designer
 {
     public partial class VideosDesignerWindow : Window
     {
-        private enum StateType
-        {
-            None,
-            TextEdit,
-            Designer
-        }
-
         private readonly string DISCUSSIONS_PATH = Path.Combine(fast_quality_check.Util.GetWorkplacePath(), "discussions");
         private readonly string VIDEOS_PATH = Path.Combine(fast_quality_check.Util.GetWorkplacePath(), "videos");
 
         // private readonly Config _configQualityDiscussions = new(Manager.QUALITY_DISCUSSIONS_FILE_NAME);
-        private readonly Config _configQualityDiscussions = new("workon");
-
-        private StateType _state;
+        private readonly Config _configQualityDiscussions = new("workon");  
 
         private int _currentDiscussion;
         private int DiscussionsCount { get => _configQualityDiscussions.Lines != null ? _configQualityDiscussions.Lines.Count : 0; }
@@ -153,6 +145,8 @@ namespace mikroblog.videos_designer
             StopVideo();
             _videoPlayer.Source = null;
             Console.ExecuteCreateVideoScript(GetCurrentDiscussionVideoFolder(), VIDEOS_PATH, GetCurrentDiscussionId());
+
+            UpdateControls(ControlUpdateType.Video);
         }
 
         private void PlayVideo()
@@ -206,13 +200,7 @@ namespace mikroblog.videos_designer
             }
         }
 
-        private void CleanupModesChanges()
-        {
-            DisableTextEditMode();
-            DisableDesignerMode();
-            CleanDesignerEntries();
-            CleanScreenshotViewer();
-        }
+
 
         private void PreviousDiscussion()
         {
@@ -269,22 +257,6 @@ namespace mikroblog.videos_designer
 
             DisableTextEditMode();
             DisableDesignerMode();
-        }
-
-        private void TextEditMode()
-        {
-            if (_state != StateType.TextEdit)
-                EnableTextEditMode();
-            else
-                DisableTextEditMode();
-        }
-
-        private void DesignerMode()
-        {
-            if (_state != StateType.Designer)
-                EnableDesignerMode();
-            else
-                DisableDesignerMode();
         }
 
         private async Task Screenshot()
@@ -352,8 +324,23 @@ namespace mikroblog.videos_designer
         }
 
         #region JS
-        private void ParseJsonMessage(JsonObject json)
+        private void ParseJsonMessage(string jsonMessage)
         {
+            JsonObject? json = null;
+
+            try
+            {
+                json = JsonSerializer.Deserialize<JsonObject>(e.WebMessageAsJson);
+
+                if (json == null)
+                    return;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError($"Error when deserializing json, Exception - {ex.Message}");
+                return;
+            }
+
             if (json["message"] == null)
             {
                 Log.WriteError("Incorrect json message");
@@ -564,62 +551,6 @@ namespace mikroblog.videos_designer
             return discussionPath;
         }
         #endregion JS
-
-        #region Modes
-        private async void EnableTextEditMode()
-        {
-            JS.ExecuteJSScript(_webView, RESOURCE_NAME_JS_EDIT_MODE);
-
-            if (_state == StateType.Designer)
-                DisableDesignerMode();
-
-            _state = StateType.TextEdit;
-            _buttonTextEditMode.Content = "Disable Text Edit Mode";
-
-            DisplayDesignerControls(false);
-
-            await JS.ExecuteJSFunction(_webView, "enableEditMode");
-        }
-
-        private async void DisableTextEditMode()
-        {
-            _state = StateType.None;
-            _buttonTextEditMode.Content = "Enable Text Edit Mode";
-
-            await JS.ExecuteJSFunction(_webView, "disableEditMode");
-        }
-
-        private async void EnableDesignerMode()
-        {
-            JS.ExecuteJSScript(_webView, RESOURCE_NAME_JS_DESIGNER_MODE);
-
-            if (_state == StateType.TextEdit)
-                DisableTextEditMode();
-
-            _state = StateType.Designer;
-            _buttonDesignerMode.Content = "Disable Designer Mode";
-
-            DisplayDesignerControls(true);
-
-            await JS.ExecuteJSFunction(_webView, "enableDesignerMode");
-        }
-
-        private async void DisableDesignerMode()
-        {
-            _state = StateType.None;
-            _buttonDesignerMode.Content = "Enable Designer Mode";
-
-            DisplayDesignerControls(false);
-
-            await JS.ExecuteJSFunction(_webView, "disableDesignerMode");
-        }
-
-        private async void CleanDesignerEntries()
-        {
-            await JS.ExecuteJSFunction(_webView, "cleanEntries");
-            _listboxEntries.Items.Clear();
-        }
-        #endregion Modes
         #region Discussions
         private string GetCurrentDiscussionId()
         {

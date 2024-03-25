@@ -16,6 +16,9 @@ namespace mikroblog.videos_designer
 
         private readonly SpeechConfig? _speechConfig = null;
 
+        /// <summary>
+        /// Initializes <see cref="_speechConfig"/> by reading "key" and "region" values from TextToSpeech config file.
+        /// </summary>
         public TextToSpeech()
         {
             var apiKey = _configTextToSpeechApiKeys.GetString("key");
@@ -27,6 +30,13 @@ namespace mikroblog.videos_designer
             _speechConfig = SpeechConfig.FromSubscription(apiKey, region);
         }
 
+        /// <summary>
+        /// Generates text to speech audio file.
+        /// </summary>
+        /// <param name="filePath">Where to save audio file</param>
+        /// <param name="text">Text to read</param>
+        /// <param name="isMale">Voice gender</param>
+        /// <returns>Length of the audio file or -1 when <see cref="_speechConfig"/> was not initialized correctly.</returns>
         public async Task<double> GenerateAudioFile(string filePath, string text, bool isMale)
         {
             if (_speechConfig == null)
@@ -42,6 +52,9 @@ namespace mikroblog.videos_designer
             return result.AudioDuration.TotalSeconds;
         }
 
+        /// <summary>
+        /// Sets voice gender depending on <paramref name="isMale"/>.
+        /// </summary>
         private void SetVoiceGender(bool isMale)
         {
             if (_speechConfig == null)
