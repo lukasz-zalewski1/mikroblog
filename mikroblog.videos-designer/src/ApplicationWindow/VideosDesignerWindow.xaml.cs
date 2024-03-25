@@ -9,13 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-
-using Microsoft.Web.WebView2.Core;
-
 using mikroblog.fast_quality_check;
 
-#pragma warning disable CS8602
-#pragma warning disable CS8604
 namespace mikroblog.videos_designer
 {
     public partial class VideosDesignerWindow : Window
@@ -58,21 +53,9 @@ namespace mikroblog.videos_designer
             InitializeControls();
 
             InitializeEvents();
-           
-            InitializeMikroblogBrowser(); 
+
+            WebViewOpenCurrentDiscussion();
         }
-
-        #region Controls
-        private void InitializeControls()
-        {
-            DisplayDesignerControls(false);
-
-            UpdateControls();
-        }
-
-
-        
-        #endregion Controls
 
         private void RemoveDiscussionFiles()
         {
@@ -90,54 +73,7 @@ namespace mikroblog.videos_designer
                 Log.WriteError($"Removing discussion directory wasn't possible, Exception - {ex.Message}");
             }
           
-            UpdateControls();
-        }
-
-        
-
-        private void UpdatePlaySpeechControls()
-        {
-            if (_listboxEntries.SelectedItem == null)
-            {
-                _textboxSpeechLength.IsEnabled = false;
-                _buttonPlaySpeech.IsEnabled = false;
-                return;
-            }
-
-            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
-
-            if (!File.Exists(path))
-            {
-                _textboxSpeechLength.IsEnabled = false;
-                _buttonPlaySpeech.IsEnabled = false;
-                return;
-            }
-
-            _textboxSpeechLength.IsEnabled = true;
-            _buttonPlaySpeech.IsEnabled = true;
-        }
-
-        private void UpdateSpeechLengthTextbox()
-        {
-            if (_listboxEntries.SelectedItem == null)
-            {
-                _textboxSpeechLength.IsEnabled = false;
-                _textboxSpeechLength.Text = string.Empty;
-                return;
-            }
-
-            string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
-
-            if (!File.Exists(path))
-            {
-                _textboxSpeechLength.IsEnabled = false;
-                _textboxSpeechLength.Text = string.Empty;
-                return;
-            }
-
-            _textboxSpeechLength.IsEnabled = true;
-
-            _textboxSpeechLength.Text = ReadSpeechLengthFromFile(path);
+            UpdateControls(ControlUpdateType.Designer);
         }
 
         private string ReadSpeechLengthFromFile(string path)
@@ -172,6 +108,9 @@ namespace mikroblog.videos_designer
 
         private void PlaySpeech()
         {
+            if (_listboxEntries.SelectedItem == null)
+                return;
+
             string path = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
 
             if (!File.Exists(path))
@@ -187,7 +126,7 @@ namespace mikroblog.videos_designer
             StartSpeechTimer();
 
             _isSpeechPlayed = true;
-            UpdateControls();
+            UpdateControls(ControlUpdateType.Speech);
         }
 
         private void StartSpeechTimer()
@@ -206,7 +145,7 @@ namespace mikroblog.videos_designer
 
             _isSpeechPlayed = false;
 
-            UpdateControls();
+            UpdateControls(ControlUpdateType.Speech);
         }
 
         private void CreateVideo()
@@ -223,7 +162,7 @@ namespace mikroblog.videos_designer
             if (!File.Exists(videoPath))
                 return;
 
-            ScreenshotViewerVideoPlayerVisibility(false);
+            ScreenshotViewerAndVideoPlayerVisibility(ScreenshotViewerAndVideoPlayerVisibilityType.ShowVideoPlayer);
 
             _videoPlayer.Source = new Uri(videoPath);
             _videoPlayer.MediaEnded += VideoPlayer_MediaEnded;
@@ -231,7 +170,7 @@ namespace mikroblog.videos_designer
             _videoPlayer.Play();
             _isVideoPlayed = true;
 
-            UpdatePlayVideoButton();
+            UpdateControls(ControlUpdateType.Video);
         }
 
         private void StopVideo()
@@ -239,31 +178,32 @@ namespace mikroblog.videos_designer
             _isVideoPlayed = false;
 
             _videoPlayer.Stop();
-            UpdatePlayVideoButton();
+            UpdateControls(ControlUpdateType.Video);
         }
 
-        private void ScreenshotViewerVideoPlayerVisibility(bool showScreenshotViewer)
+        /// <summary/>
+        /// <param name="path">Path to an existing screenshot</param>
+        private void LoadScreenshotToScreenshotViewer(string path)
         {
-            if (showScreenshotViewer)
+            try
             {
-                _screenshotViewer.Visibility = Visibility.Visible;
-                _videoPlayer.Visibility = Visibility.Hidden;
+                byte[] array = File.ReadAllBytes(path);
 
-                StopVideo();
+                // Loading image via MemoryStream and caching on load means that we do not keep on using screenshot on the disk and we can delete it if needed
+                using var memoryStream = new MemoryStream(array);
+
+                BitmapImage bitmapImage = new();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memoryStream;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                _screenshotViewer.Source = bitmapImage;
             }
-            else
+            catch (Exception ex)
             {
-                _screenshotViewer.Visibility = Visibility.Hidden;
-                _videoPlayer.Visibility = Visibility.Visible;
+                Log.WriteError($"Loading screenshot to screenshot viewer, Exception - {ex.Message}");
             }
-        }
-
-        private void UpdatePlayVideoButton()
-        {
-            if (_isVideoPlayed)
-                _buttonPlayVideo.Content = "Stop Video";
-            else
-                _buttonPlayVideo.Content = "Play Video";
         }
 
         private void CleanupModesChanges()
@@ -294,11 +234,11 @@ namespace mikroblog.videos_designer
         {
             StopSpeech();
 
-            OpenCurrentDiscussion();
+            WebViewOpenCurrentDiscussion();
 
             CleanupModesChanges();
 
-            UpdateControls();
+            UpdateControls(ControlUpdateType.All);
         }
 
         private void DropDiscussion()
@@ -316,25 +256,19 @@ namespace mikroblog.videos_designer
             if (string.IsNullOrEmpty(GetCurrentDiscussionId()))
                 NoMoreDiscussions();
             else
-                OpenCurrentDiscussion();
+                WebViewOpenCurrentDiscussion();
 
-            UpdateControls();
+            UpdateControls(ControlUpdateType.All);
         }
 
         private void NoMoreDiscussions()
         {
-            OpenEmptyPage();
-            HideModeButtons();
+            WebViewOpenEmptyPage();
+            HideButtonsModes();
             DisplayDesignerControls(false);
 
             DisableTextEditMode();
             DisableDesignerMode();
-        }
-
-        private void HideModeButtons()
-        {
-            _buttonTextEditMode.Visibility = Visibility.Hidden;
-            _buttonDesignerMode.Visibility = Visibility.Hidden;
         }
 
         private void TextEditMode()
@@ -549,7 +483,7 @@ namespace mikroblog.videos_designer
                 Log.WriteError($"Couldn't take a screenshot, Exception - {ex.Message}");
             }
 
-            UpdateControls();
+            UpdateControls(ControlUpdateType.Screenshot);
         }
 
         private async void JsonMessageSpeechData(JsonObject json)
@@ -561,9 +495,7 @@ namespace mikroblog.videos_designer
 
             SaveSpeechLengthToFile(entryNumber, speechLength);
 
-            UpdateControls();
-            UpdatePlaySpeechControls();
-            UpdateSpeechLengthTextbox();
+            UpdateControls(ControlUpdateType.Speech);       
         }
 
         private bool ValidateSpeechData(JsonObject json, out int entryNumber, out string text, out bool isMale)
@@ -687,46 +619,7 @@ namespace mikroblog.videos_designer
             await JS.ExecuteJSFunction(_webView, "cleanEntries");
             _listboxEntries.Items.Clear();
         }
-
-        private void DisplayDesignerControls(bool display)
-        {
-            Visibility visibility = display ? Visibility.Visible : Visibility.Hidden;
-
-            _gridDesignerMenu.Visibility = visibility;
-            _gridPlayer.Visibility = visibility;
-        }
-
-        private void CleanScreenshotViewer()
-        {
-            _screenshotViewer.Source = null;
-        }
         #endregion Modes
-
-        #region WebView
-        private void InitializeMikroblogBrowser()
-        {
-            OpenCurrentDiscussion();
-        }
-
-        private void OpenCurrentDiscussion()
-        {
-            var uri = new Uri($"{DiscussionDownloader.DISCUSSION_NAME_TEMPLATE}{GetCurrentDiscussionId()}");
-            try
-            {
-                _webView.Source = uri;
-            }
-            catch (Exception ex)
-            {
-                Log.WriteError($"Can't open - {uri}, Exception - {ex.Message}");
-            }
-        }
-
-        public void OpenEmptyPage()
-        {
-            _webView.Source = new Uri("about:blank");
-        }
-        #endregion WebView
-
         #region Discussions
         private string GetCurrentDiscussionId()
         {
@@ -757,7 +650,6 @@ namespace mikroblog.videos_designer
             var rating = _configQualityDiscussions.GetString(GetCurrentDiscussionId());
             return string.IsNullOrEmpty(rating) ? string.Empty : rating;
         }
-
         #endregion Discussions
     }
 }

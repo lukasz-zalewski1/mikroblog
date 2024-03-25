@@ -43,7 +43,7 @@
             <Grid x:Name="_gridDesignerMenu" Width="580" Height="500" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="55,0,0,30">
                 <Label FontSize="26" FontStyle="Italic" FontWeight="DemiBold" Content="{x:Static r:Strings.LabelVideoDesigner}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" />
 
-                <Border x:Name="_borderDesignerMode" BorderThickness="2" Width="580" Height="450" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,50,0,0"/>
+                <Border BorderThickness="2" Width="580" Height="450" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,50,0,0"/>
 
                 <ListBox x:Name="_listboxEntries" FontSize="16" HorizontalContentAlignment="Left" Width="50" Height="430" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,0"
                          SelectionChanged="ListboxEntries_SelectionChanged"/>
@@ -76,8 +76,8 @@
                         Click="ButtonPlayVideo_Click" />
             </Grid>
 
-            <Grid x:Name="_gridPlayer" Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="690,10,0,0" >
-                <Border x:Name="_borderPlayer" BorderThickness="2" Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top" 
+            <Grid x:Name="_gridMedia" Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="690,10,0,0" >
+                <Border BorderThickness="2" Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top" 
                         Background="{DynamicResource BackgroundColor}" BorderBrush="{DynamicResource BackgroundColor}"/>
 
                 <Image x:Name="_screenshotViewer"   Width="600" Height="1060" HorizontalAlignment="Left" VerticalAlignment="Top" />

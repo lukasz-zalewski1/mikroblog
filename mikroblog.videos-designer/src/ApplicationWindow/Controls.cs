@@ -1,24 +1,60 @@
-﻿using mikroblog.fast_quality_check;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+
+using mikroblog.fast_quality_check;
 
 namespace mikroblog.videos_designer
 {
     public partial class VideosDesignerWindow : Window
     {
-        private void UpdateControls()
+        private enum ControlUpdateType
         {
-            UpdateLabelDiscussionNumber();
-            UpdateLabelDiscussionId();       
-            UpdateLabelDiscussionQuality();
+            All,
+            Designer,
+            Screenshot,
+            Speech,
+            Video
+        }
 
+        private enum ScreenshotViewerAndVideoPlayerVisibilityType
+        {
+            ShowScreenshotViewer,
+            ShowVideoPlayer
+        }
+
+        /// <summary>
+        /// Calls <see cref="DisplayDesignerControls(false)"/> and <see cref="UpdateControls(ControlUpdateType.All)"/>.
+        /// </summary>
+        private void InitializeControls()
+        {
+            DisplayDesignerControls(false);
+
+            UpdateControls(ControlUpdateType.All);
+        }
+
+        private void UpdateControls(ControlUpdateType controlUpdateType)
+        {
+            if (controlUpdateType == ControlUpdateType.All)
+            {
+                UpdateLabelDiscussionNumber();
+                UpdateLabelDiscussionId();
+                UpdateLabelDiscussionQuality();
+            }
+
+            // Always
             UpdateGridRemoveDiscussionFiles();
 
-            UpdateSpeechButton();
+            if (controlUpdateType == ControlUpdateType.All || controlUpdateType == ControlUpdateType.Designer || controlUpdateType == ControlUpdateType.Speech)
+                UpdateControlsSpeech();
 
-            UpdateScreenshotViewer();
+            if (controlUpdateType == ControlUpdateType.All || controlUpdateType == ControlUpdateType.Designer || controlUpdateType == ControlUpdateType.Screenshot)
+                UpdateScreenshotViewer();
+
+            if (controlUpdateType == ControlUpdateType.All || controlUpdateType == ControlUpdateType.Designer || controlUpdateType == ControlUpdateType.Video)
+                UpdateButtonPlayVideoContent();
         }
 
         /// <summary>
@@ -84,9 +120,36 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Updates <see cref="_buttonPlaySpeech"/> content depending of <see cref="_isSpeechPlayed"/> value.
+        /// Calls <see cref="UpdateButtonPlaySpeechContent"/> and then checks if audio and speech length files exist. If they do it enables speech controls, if not it disables them.
         /// </summary>
-        private void UpdateSpeechButton()
+        private void UpdateControlsSpeech()
+        {
+            UpdateButtonPlaySpeechContent();
+
+            if (_listboxEntries.SelectedItem == null)
+            {
+                DisableControlsSpeech();
+                return;
+            }
+
+            string pathSpeechLength = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
+            string pathAudio = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
+
+            if (!(File.Exists(pathSpeechLength) && File.Exists(pathAudio)))
+            {
+                DisableControlsSpeech();
+                return;
+            }
+
+            _textboxSpeechLength.IsEnabled = true;
+            _textboxSpeechLength.Text = ReadSpeechLengthFromFile(pathSpeechLength);
+            _buttonPlaySpeech.IsEnabled = true;
+        }
+
+        /// <summary>
+        /// Updates <see cref="_buttonPlaySpeech"/> content depending on <see cref="_isSpeechPlayed"/> value.
+        /// </summary>
+        private void UpdateButtonPlaySpeechContent()
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -95,6 +158,17 @@ namespace mikroblog.videos_designer
                 else
                     _buttonPlaySpeech.Content = Strings.ButtonContentPlaySpeech;
             }));
+        }
+
+        /// <summary>
+        /// Updates <see cref="_buttonPlayVideo"/> content depending on <see cref="_isVideoPlayed"/> value.
+        /// </summary>
+        private void UpdateButtonPlayVideoContent()
+        {
+            if (_isVideoPlayed)
+                _buttonPlayVideo.Content = Strings.ButtonContentStopVideo;
+            else
+                _buttonPlayVideo.Content = Strings.ButtonContentPlayVideo;
         }
 
         /// <summary>
@@ -119,29 +193,87 @@ namespace mikroblog.videos_designer
             LoadScreenshotToScreenshotViewer(path);
         }
 
-        /// <summary/>
-        /// <param name="path">Path to an existing screenshot</param>
-        private void LoadScreenshotToScreenshotViewer(string path)
+        /// <summary>
+        /// Hides <see cref="_buttonTextEditMode"/> and <see cref="_buttonDesignerMode"/> buttons.
+        /// </summary>
+        private void HideButtonsModes()
         {
+            _buttonTextEditMode.Visibility = Visibility.Hidden;
+            _buttonDesignerMode.Visibility = Visibility.Hidden;
+        }
+
+        /// <summary>
+        /// Displays or hides <see cref="_gridDesignerMenu"/> and <see cref="_gridMedia"/>.
+        /// </summary>
+        /// <param name="display"></param>
+        private void DisplayDesignerControls(bool display)
+        {
+            Visibility visibility = display ? Visibility.Visible : Visibility.Hidden;
+
+            _gridDesignerMenu.Visibility = visibility;
+            _gridMedia.Visibility = visibility;
+        }
+
+        /// <summary>
+        /// Disables <see cref="_textboxSpeechLength" and <see cref="_buttonPlaySpeech"/> controls and empties <see cref="_textboxSpeechLength"/> text./>
+        /// </summary>
+        private void DisableControlsSpeech()
+        {
+            _textboxSpeechLength.IsEnabled = false;
+            _textboxSpeechLength.Text = string.Empty;
+            _buttonPlaySpeech.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// Stops displaying image on <see cref="_screenshotViewer"/>.
+        /// </summary>
+        private void CleanScreenshotViewer()
+        {
+            _screenshotViewer.Source = null;
+        }
+
+        /// <summary>
+        /// Display one of <see cref="_screenshotViewer"/> or <see cref="_videoPlayer"/> depending on parameter - <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">What to display</param>
+        private void ScreenshotViewerAndVideoPlayerVisibility(ScreenshotViewerAndVideoPlayerVisibilityType type)
+        {
+            if (type == ScreenshotViewerAndVideoPlayerVisibilityType.ShowScreenshotViewer)
+            {
+                _screenshotViewer.Visibility = Visibility.Visible;
+                _videoPlayer.Visibility = Visibility.Hidden;
+
+                StopVideo();
+            }
+            else
+            {
+                _screenshotViewer.Visibility = Visibility.Hidden;
+                _videoPlayer.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
+        /// Opens current discussion page in <see cref="_webView"/>.
+        /// </summary>
+        private void WebViewOpenCurrentDiscussion()
+        {
+            var uri = new Uri($"{DiscussionDownloader.DISCUSSION_NAME_TEMPLATE}{GetCurrentDiscussionId()}");
             try
             {
-                byte[] array = File.ReadAllBytes(path);
-
-                // Loading image via MemoryStream and caching on load means that we do not keep on using screenshot on the disk and we can delete it if needed
-                using var memoryStream = new MemoryStream(array);
-
-                BitmapImage bitmapImage = new();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memoryStream;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                _screenshotViewer.Source = bitmapImage;
+                _webView.Source = uri;
             }
             catch (Exception ex)
             {
-                Log.WriteError($"Loading screenshot to screenshot viewer, Exception - {ex.Message}");
+                Log.WriteError($"Can't open - {uri}, Exception - {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Opens "about:blank" in <see cref="_webView"/>.
+        /// </summary>
+        private void WebViewOpenEmptyPage()
+        {
+            _webView.Source = new Uri("about:blank");
         }
     }
 }

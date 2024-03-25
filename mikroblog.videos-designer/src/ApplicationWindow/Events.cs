@@ -84,12 +84,9 @@ namespace mikroblog.videos_designer
         /// </summary>
         private void ListboxEntries_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ScreenshotViewerVideoPlayerVisibility(true);
+            ScreenshotViewerAndVideoPlayerVisibility(ScreenshotViewerAndVideoPlayerVisibilityType.ShowScreenshotViewer);
 
-            UpdateControls();
-
-            UpdatePlaySpeechControls();
-            UpdateSpeechLengthTextbox();
+            UpdateControls(ControlUpdateType.Designer);
         }
 
         /// <summary>

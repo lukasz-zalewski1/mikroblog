@@ -51,6 +51,12 @@ if ($videosPath[$videosPath.Count - 1] -ne "\") {
     $videosPath += "\"
 }
 
+$discussionId = $args[2]
+
+if ($null -eq $discussionId) {
+    Exit-Script "Discussion Id wasn't specified"
+}
+
 # Get all files from the video path and check if they are correct
 # The number of .png .wav .txt must match and there has to be exactly the same number of each file type in the folder
 # Entries are counted from 1 upwards, there can't be any mismatch in names
@@ -108,7 +114,7 @@ for ($i = 0; $i -lt $fileGroups.Values.Count; ++$i) {
 # The batch file is needed because there were problems when running merging command from pwsh
 $ffmpegCommandListOfEntries = ""
 $ffmpegCommandFilter = ""
-$completeVideoPath = $videosPath + "video.mp4"
+$completeVideoPath = $videosPath + $discussionId + ".mp4"
 $videoMergeScriptPath = $discussionPath + "MergeVideos.bat"
 
 for ($i = 0; $i -lt $entries.Count; ++$i) {
