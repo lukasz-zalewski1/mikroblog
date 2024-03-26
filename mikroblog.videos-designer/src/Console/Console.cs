@@ -1,6 +1,11 @@
-﻿using System;
+﻿using mikroblog.fast_quality_check;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+
+// TODO
+// Fix screenshot size
+// Round corners around screenshots
 
 namespace mikroblog.videos_designer
 {
@@ -32,11 +37,20 @@ namespace mikroblog.videos_designer
         /// <param name="discussionId">Id of the discussion</param>
         public static void CreateAndExecuteVideoScript(string path, string videosPath, string discussionId)
         {
-            string args = $" -File \"{SCRIPT_PATH}\" \"{path}\" \"{videosPath}\" \"{discussionId}\"";
+            try
+            {
+                string args = $" -File \"{SCRIPT_PATH}\" \"{path}\" \"{videosPath}\" \"{discussionId}\"";
 
-            Process.Start(new ProcessStartInfo("powershell.exe", args));
+                var process = Process.Start(new ProcessStartInfo("powershell.exe", args));
 
-            SetForegroundWindow(GetConsoleWindow());
+                SetForegroundWindow(GetConsoleWindow());
+
+                process?.WaitForExit();              
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError($"Couldn't start pwsh process, Exception - {ex.Message}");
+            }
         }
     }
 }
