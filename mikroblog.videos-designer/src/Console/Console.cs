@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 // TODO
-// Fix screenshot size
 // Round corners around screenshots
 
 namespace mikroblog.videos_designer

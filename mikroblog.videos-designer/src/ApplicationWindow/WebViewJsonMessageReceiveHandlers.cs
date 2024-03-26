@@ -23,7 +23,7 @@ namespace mikroblog.videos_designer
         /// </summary>
         private const int CANVAS_WIDTH = 1080;
         private const int CANVAS_HEIGHT = 1920;
-        private const float CANVAS_RATIO = 16 / 9;
+        private const float CANVAS_RATIO = 16F / 9F;
 
         private readonly TextToSpeech _speechService = new();
 
