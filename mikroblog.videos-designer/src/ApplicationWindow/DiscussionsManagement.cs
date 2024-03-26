@@ -11,8 +11,7 @@ namespace mikroblog.videos_designer
     {
         private readonly string DISCUSSIONS_PATH = Path.Combine(fast_quality_check.Util.GetWorkplacePath(), "discussions");
 
-        //private readonly Config _configQualityDiscussions = new(Manager.QUALITY_DISCUSSIONS_FILE_NAME);
-        private readonly Config _configQualityDiscussions = new("workon");
+        private readonly Config _configQualityDiscussions = new(Manager.QUALITY_DISCUSSIONS_FILE_NAME);
 
         private int _currentDiscussion;
 
