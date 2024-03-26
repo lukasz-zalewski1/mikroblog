@@ -95,10 +95,10 @@ namespace mikroblog.videos_designer
         /// <param name="json">JsonObject received from <see cref="_webView"/></param>
         private void JsonMessageScreenshotData(JsonObject json)
         {
-            if (!ValidateScreenshotData(json, out Rectangle rect, out int entryNumber))
+            if (!ValidateScreenshotData(json, out Rectangle rect, out double scaling, out int entryNumber))
                 return;
 
-            TakeScreenshot(entryNumber, CalculateActualScreenshotRectangle(rect));
+            TakeScreenshot(entryNumber, CalculateActualScreenshotRectangle(rect, scaling));
         }
 
         /// <summary>
@@ -108,12 +108,13 @@ namespace mikroblog.videos_designer
         /// <param name="rect">Coordinates and size of the screen's area to do a screenshot of.</param>
         /// <param name="entryNumber">Number of entry to do a screenshot of</param>
         /// <returns>True if data is valid, otherwise false.</returns>
-        private bool ValidateScreenshotData(JsonObject json, out Rectangle rect, out int entryNumber)
+        private bool ValidateScreenshotData(JsonObject json, out Rectangle rect, out double scaling, out int entryNumber)
         {
             rect = new();
+            scaling = 1.0;
             entryNumber = -1;
 
-            if (json["entryNumber"] == null || json["x"] == null || json["y"] == null || json["width"] == null || json["height"] == null)
+            if (json["entryNumber"] == null || json["x"] == null || json["y"] == null || json["width"] == null || json["height"] == null || json["scaling"] == null)
             {
                 Log.WriteError("Invalid screenshot data");
                 return false;
@@ -123,7 +124,8 @@ namespace mikroblog.videos_designer
                 !JS.TryGetIntFromJsonNode(json["x"], out int x) ||
                 !JS.TryGetIntFromJsonNode(json["y"], out int y) ||
                 !JS.TryGetIntFromJsonNode(json["width"], out int width) ||
-                !JS.TryGetIntFromJsonNode(json["height"], out int height)
+                !JS.TryGetIntFromJsonNode(json["height"], out int height) ||
+                !JS.TryGetDoubleFromJsonNode(json["scaling"], out scaling)
                 )
             {
                 Log.WriteError("Invalid screenshot data");
@@ -137,17 +139,17 @@ namespace mikroblog.videos_designer
 
         /// <summary>
         /// Calculates and returns actual rectangle of screen's area which the screenshot will be taken.
-        /// To calculate the actual values it takes dpi scaling and <see cref="_webView"/> position into account.
+        /// To calculate the actual values it takes <see cref="_webView"/> page zoom into account.
         /// </summary>
-        private Rectangle CalculateActualScreenshotRectangle(Rectangle rect)
+        /// <param name="scaling"><see cref="_webView"/> page scaling</param>
+        /// <returns>Actual screenshot rectangle</returns>
+        private Rectangle CalculateActualScreenshotRectangle(Rectangle rect, double scaling)
         {
-            double displayScaling = PresentationSource.FromVisual(Application.Current.MainWindow).CompositionTarget.TransformToDevice.M11;
-
-            rect.X = (int)(rect.X * displayScaling);
+            rect.X = (int)(rect.X * scaling);
             rect.X += (int)_webView.Margin.Left;
-            rect.Y = (int)(rect.Y * displayScaling) + (int)_webView.Margin.Top;
-            rect.Width = (int)(rect.Width * displayScaling);
-            rect.Height = (int)(rect.Height * displayScaling);
+            rect.Y = (int)(rect.Y * scaling) + (int)_webView.Margin.Top;
+            rect.Width = (int)(rect.Width * scaling);
+            rect.Height = (int)(rect.Height * scaling);
 
             return rect;
         }

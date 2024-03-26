@@ -29,6 +29,15 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
+        /// Tries to get double value from node.
+        /// </summary>
+        /// <returns>True if success, otherwise false</returns>
+        public static bool TryGetDoubleFromJsonNode(JsonNode node, out double value)
+        {
+            return double.TryParse(node.ToString(), out value);
+        }
+
+        /// <summary>
         /// Tries to get boolean value from <paramref name="node"/>.
         /// </summary>
         /// <returns>True if success, otherwise false</returns>

@@ -92,6 +92,7 @@ function sendScreenshotData(entryNumber) {
         y: rect.y,
         width: rect.width,
         height: rect.height,
+        scaling: window.devicePixelRatio
     }
 
     window.chrome.webview.postMessage(json);
