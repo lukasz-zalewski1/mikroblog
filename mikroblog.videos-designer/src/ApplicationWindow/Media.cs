@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Media;
 using System.Threading;
@@ -19,6 +21,17 @@ namespace mikroblog.videos_designer
         private bool _isSpeechPlayed = false;
 
         private bool _isVideoPlayed = false;
+
+        /// <summary>
+        /// Size of canvas where screenshot of screen's area will be drawn. In the end - the size of the image.
+        /// </summary>
+        private const int CANVAS_WIDTH = 1080;
+        private const int CANVAS_HEIGHT = 1920;
+        private const float CANVAS_RATIO = 16F / 9F;
+
+        private const int SCREENSHOT_RECTANGLE_ARC_RADIUS = 20;
+
+        private readonly Brush CANVAS_BACKGROUND_COLOR = Brushes.Black;
 
         /// <summary>
         /// Calls <see cref="CleanScreenshotViewer"/> and runs <see cref="RunScreenshotProcedure"/> on <see cref="_listboxEntries"/>.SelectedItem.
@@ -276,6 +289,86 @@ namespace mikroblog.videos_designer
 
             _videoPlayer.Stop();
             UpdateControls(ControlUpdateType.Video);
+        }
+
+        /// <summary>
+        /// Takes a screenshot of given in <paramref name="rect"/> area of the screen. Puts the screenshot into a round rectangle border on <see cref="CANVAS_BACKGROUND_COLOR"/> colored canvas.
+        /// </summary>
+        /// <param name="rect">Area of the screen to take screenshot of</param>
+        /// <returns>Bitmap of canvas with screenshot on it or null if failed</returns>
+        private Bitmap? GetCanvasWithScreenshotDrawnInsideOfRoundedRect(Rectangle rect)
+        {
+            try
+            {
+                // Screenshot given screen area
+                Bitmap bitmapScreenshot = new(rect.Width, rect.Height);
+                using Graphics graphicsScreenshot = Graphics.FromImage(bitmapScreenshot);
+                graphicsScreenshot.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size((int)(rect.Width * CANVAS_RATIO), (int)(rect.Height * CANVAS_RATIO)));
+
+                Bitmap bitmapCanvas = new(CANVAS_WIDTH, CANVAS_HEIGHT);
+                using var graphicsCanvas = Graphics.FromImage(bitmapCanvas);
+
+                int screenshotWidthOnCanvas = (int)(bitmapScreenshot.Width * CANVAS_RATIO);
+                int screenshotHeightOnCanvas = (int)(bitmapScreenshot.Height * CANVAS_RATIO);
+                int screenshotPositionOnCanvasX = (CANVAS_WIDTH / 2) - (screenshotWidthOnCanvas / 2);
+                int screenshotPositionOnCanvasY = (CANVAS_HEIGHT / 2) - (screenshotHeightOnCanvas / 2);
+
+                // Draws screenshot on canvas
+                graphicsCanvas.DrawImage(bitmapScreenshot, screenshotPositionOnCanvasX, screenshotPositionOnCanvasY, screenshotWidthOnCanvas, screenshotHeightOnCanvas);
+
+                // Makes lines of the rounded border smooth
+                graphicsCanvas.SmoothingMode = SmoothingMode.AntiAlias;
+
+                // Draws an overlay which covers everything besides screenshot, leaving it in a rounded rectangle border
+                var boundingRect = new Rectangle(screenshotPositionOnCanvasX, screenshotPositionOnCanvasY, screenshotWidthOnCanvas, screenshotHeightOnCanvas);
+                GraphicsPath overlay = RoundedRectangle(boundingRect, SCREENSHOT_RECTANGLE_ARC_RADIUS);
+                overlay.AddRectangle(new Rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT));
+                graphicsCanvas.FillPath(CANVAS_BACKGROUND_COLOR, overlay);
+                
+
+                return bitmapCanvas;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError($"Preparing canvas with screenshot failed, Exception - {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Creates and returns GraphicsPath object of a rounded rectangle.
+        /// </summary>
+        /// <param name="radius">Arc radius</param>
+        private GraphicsPath RoundedRectangle(Rectangle bounds, int radius)
+        {
+            int diameter = radius * 2;
+            System.Drawing.Size size = new(diameter, diameter);
+            Rectangle arc = new(bounds.Location, size);
+            GraphicsPath path = new();
+
+            if (radius == 0)
+            {
+                path.AddRectangle(bounds);
+                return path;
+            }
+
+            // Top left arc  
+            path.AddArc(arc, 180, 90);
+
+            // Top right arc  
+            arc.X = bounds.Right - diameter;
+            path.AddArc(arc, 270, 90);
+
+            // Bottom right arc  
+            arc.Y = bounds.Bottom - diameter;
+            path.AddArc(arc, 0, 90);
+
+            // Bottom left arc 
+            arc.X = bounds.Left;
+            path.AddArc(arc, 90, 90);
+
+            path.CloseFigure();
+            return path;
         }
     }
 }

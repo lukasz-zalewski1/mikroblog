@@ -18,13 +18,6 @@ namespace mikroblog.videos_designer
         /// </summary>
         private const int SCREENSHOT_DELAY = 100;
 
-        /// <summary>
-        /// Size of canvas where screenshot of screen's area will be drawn. In the end - the size of the image.
-        /// </summary>
-        private const int CANVAS_WIDTH = 1080;
-        private const int CANVAS_HEIGHT = 1920;
-        private const float CANVAS_RATIO = 16F / 9F;
-
         private readonly TextToSpeech _speechService = new();
 
         /// <summary>
@@ -160,7 +153,7 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
-        /// Takes a screenshot of screen's area given in <paramref name="rect"/>, puts it into a black canvas and saves to file.
+        /// Calls <see cref="GetCanvasWithScreenshotDrawnInsideOfRoundedRect"/> and saves prepared bitmap to a file.
         /// </summary>
         private void TakeScreenshot(int entryNumber, Rectangle rect)
         {
@@ -168,36 +161,12 @@ namespace mikroblog.videos_designer
 
             try
             {
-                // Screenshot screen area
-                Bitmap bitmapScreenshot = new(rect.Width, rect.Height);
-
-                using Graphics graphicsScreenshot = Graphics.FromImage(bitmapScreenshot);
-                graphicsScreenshot.CopyFromScreen(rect.X, rect.Y, 0, 0, new System.Drawing.Size((int)(rect.Width * CANVAS_RATIO), (int)(rect.Height * CANVAS_RATIO)));
-
-                // Put screenshot onto black canvas
-                Bitmap bitmapCanvas = new(CANVAS_WIDTH, CANVAS_HEIGHT);
-
-                using var graphicsCanvas = Graphics.FromImage(bitmapCanvas);
-                graphicsCanvas.Clear(Color.Black);
-
-                var bitmapWidth = bitmapScreenshot.Width * CANVAS_RATIO;
-                var bitmapHeight = bitmapScreenshot.Height * CANVAS_RATIO;
-                graphicsCanvas.DrawImage(bitmapScreenshot, (CANVAS_WIDTH / 2) - (bitmapWidth / 2), (CANVAS_HEIGHT / 2) - (bitmapHeight / 2), bitmapWidth, bitmapHeight);
-
-                // Save to file
-                try
-                {
-                    string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionFolder(), (entryNumber + 1).ToString()), ".png");
-                    bitmapCanvas.Save(path, ImageFormat.Png);
-                }
-                catch (Exception ex)
-                {
-                    Log.WriteError($"Couldn't save a screenshot {ex.Message}");
-                }
+                string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionFolder(), (entryNumber + 1).ToString()), ".png");
+                GetCanvasWithScreenshotDrawnInsideOfRoundedRect(rect).Save(path, ImageFormat.Png);
             }
             catch (Exception ex)
             {
-                Log.WriteError($"Couldn't take a screenshot, Exception - {ex.Message}");
+                Log.WriteError($"Couldn't save a screenshot {ex.Message}");
             }
 
             UpdateControls(ControlUpdateType.Screenshot);
