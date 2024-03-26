@@ -16,4 +16,10 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.58" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="workplace.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

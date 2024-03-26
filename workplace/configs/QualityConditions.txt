@@ -1,0 +1,4 @@
+﻿VeryGoodPostRating=
+GoodPostRating=
+VeryGoodCommentRating=
+GoodCommentRating=
