@@ -151,26 +151,29 @@ namespace mikroblog.videos_designer
         /// </summary>
         private void UpdateControlsSpeech()
         {
-            UpdateButtonPlaySpeechContent();
-
-            if (_listboxEntries.SelectedItem == null)
+            Dispatcher.Invoke(new Action(() =>
             {
-                DisableControlsSpeech();
-                return;
-            }
+                UpdateButtonPlaySpeechContent();
 
-            string pathSpeechLength = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
-            string pathAudio = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
+                if (_listboxEntries.SelectedItem == null)
+                {
+                    DisableControlsSpeech();
+                    return;
+                }
 
-            if (!(File.Exists(pathSpeechLength) && File.Exists(pathAudio)))
-            {
-                DisableControlsSpeech();
-                return;
-            }
+                string pathSpeechLength = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".txt");
+                string pathAudio = Path.ChangeExtension(Path.Combine(DISCUSSIONS_PATH, GetCurrentDiscussionId(), _listboxEntries.SelectedItem.ToString()), ".wav");
 
-            _textboxSpeechLength.IsEnabled = true;
-            _textboxSpeechLength.Text = ReadSpeechLengthFromFile();
-            _buttonPlaySpeech.IsEnabled = true;
+                if (!(File.Exists(pathSpeechLength) && File.Exists(pathAudio)))
+                {
+                    DisableControlsSpeech();
+                    return;
+                }
+
+                _textboxSpeechLength.IsEnabled = true;
+                _textboxSpeechLength.Text = ReadSpeechLengthFromFile();
+                _buttonPlaySpeech.IsEnabled = true;
+            }));
         }
 
         /// <summary>
