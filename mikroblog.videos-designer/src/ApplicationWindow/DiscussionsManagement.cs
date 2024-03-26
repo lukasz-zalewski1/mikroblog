@@ -119,6 +119,11 @@ namespace mikroblog.videos_designer
                     _currentDiscussion -= 1;
             }
 
+            StopSpeech();
+            StopVideo();
+
+            CleanModesChanges();
+
             if (string.IsNullOrEmpty(GetCurrentDiscussionId()))
                 NoMoreDiscussions();
             else
