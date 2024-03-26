@@ -162,7 +162,12 @@ namespace mikroblog.videos_designer
             try
             {
                 string path = Path.ChangeExtension(Path.Combine(GetCurrentDiscussionFolder(), (entryNumber + 1).ToString()), ".png");
-                GetCanvasWithScreenshotDrawnInsideOfRoundedRect(rect).Save(path, ImageFormat.Png);
+                var bitmapFinalImage = GetCanvasWithScreenshotDrawnInsideOfRoundedRect(rect);
+
+                if (bitmapFinalImage == null)
+                    return;
+
+                bitmapFinalImage.Save(path, ImageFormat.Png);
             }
             catch (Exception ex)
             {
