@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 // TODO
-// Round corners around screenshots
+// Pwsh script doesn't work when there is only one entry - fix
+// Don't create discussion folder until entries are needed
 
 namespace mikroblog.videos_designer
 {

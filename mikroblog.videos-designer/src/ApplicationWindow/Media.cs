@@ -29,9 +29,12 @@ namespace mikroblog.videos_designer
         private const int CANVAS_HEIGHT = 1920;
         private const float CANVAS_RATIO = 16F / 9F;
 
+        private const float SCREENSHOT_ON_CANVAS_WIDTH_RATIO = 0.88F;
+        private const float SCREENSHOT_ON_CANVAS_POSITION_X_RATION = (1.0F - SCREENSHOT_ON_CANVAS_WIDTH_RATIO) / 2.0F;
+
         private const int SCREENSHOT_RECTANGLE_ARC_RADIUS = 20;
 
-        private readonly Brush CANVAS_BACKGROUND_COLOR = Brushes.Black;
+        private readonly Brush CANVAS_BACKGROUND_COLOR = new SolidBrush(Color.FromArgb(41, 2, 2));
 
         /// <summary>
         /// Calls <see cref="CleanScreenshotViewer"/> and runs <see cref="RunScreenshotProcedure"/> on <see cref="_listboxEntries"/>.SelectedItem.
@@ -308,9 +311,11 @@ namespace mikroblog.videos_designer
                 Bitmap bitmapCanvas = new(CANVAS_WIDTH, CANVAS_HEIGHT);
                 using var graphicsCanvas = Graphics.FromImage(bitmapCanvas);
 
-                int screenshotWidthOnCanvas = (int)(bitmapScreenshot.Width * CANVAS_RATIO);
+                // int screenshotWidthOnCanvas = (int)(bitmapScreenshot.Width * CANVAS_RATIO); // 906 
+                int screenshotWidthOnCanvas = (int)(CANVAS_WIDTH * SCREENSHOT_ON_CANVAS_WIDTH_RATIO);
                 int screenshotHeightOnCanvas = (int)(bitmapScreenshot.Height * CANVAS_RATIO);
-                int screenshotPositionOnCanvasX = (CANVAS_WIDTH / 2) - (screenshotWidthOnCanvas / 2);
+                // int screenshotPositionOnCanvasX = (CANVAS_WIDTH / 2) - (screenshotWidthOnCanvas / 2); // 87
+                int screenshotPositionOnCanvasX = (int)(CANVAS_WIDTH * SCREENSHOT_ON_CANVAS_POSITION_X_RATION);
                 int screenshotPositionOnCanvasY = (CANVAS_HEIGHT / 2) - (screenshotHeightOnCanvas / 2);
 
                 // Draws screenshot on canvas
