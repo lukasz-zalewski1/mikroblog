@@ -192,4 +192,7 @@
   <data name="LabelVideoDesigner" xml:space="preserve">
     <value>Video Designer</value>
   </data>
+  <data name="LabelVideoSpeed" xml:space="preserve">
+    <value>Video Speed</value>
+  </data>
 </root>

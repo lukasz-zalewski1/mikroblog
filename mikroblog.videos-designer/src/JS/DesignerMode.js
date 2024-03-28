@@ -8,6 +8,8 @@ if (topHeader !== null)
     topHeader.remove();
 
 document.querySelectorAll("section[data-label^='ad:']").forEach(e => e.remove());
+document.querySelectorAll("span.button").forEach(x => x.remove());
+document.querySelectorAll("h1").forEach(x => x.remove());
 
 let navbar = document.querySelector("nav.mobile-navbar");
 if (navbar !== null)

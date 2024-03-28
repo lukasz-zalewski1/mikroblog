@@ -182,6 +182,23 @@ namespace mikroblog.videos_designer
         }
 
         /// <summary>
+        /// Constrains textbox input to floating point numbers only.
+        /// </summary>
+        private void TextboxVideoSpeed_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            bool approvedDecimalPoint = false;
+
+            if (e.Text == ".")
+            {
+                if (!((TextBox)sender).Text.Contains('.'))
+                    approvedDecimalPoint = true;
+            }
+
+            if (!(char.IsDigit(e.Text, e.Text.Length - 1) || approvedDecimalPoint))
+                e.Handled = true;
+        }
+
+        /// <summary>
         /// Calls <see cref="CreateVideo"/> method.
         /// </summary>
         private void ButtonCreateVideo_Click(object sender, RoutedEventArgs e)

@@ -70,9 +70,12 @@
                        HorizontalAlignment="Left" VerticalAlignment="Top"   Margin="140,300,0,0" 
                        IsEnabled="False" TextChanged="TextboxSpeechLength_TextChanged" PreviewTextInput="TextboxSpeechLength_PreviewTextInput"/>
 
-                <Button x:Name="_buttonCreateVideo" FontSize="16" Content="{x:Static r:Strings.ButtonContentCreateVideo}" Width="200" Height="30"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,458,0,0" 
+                <Label FontSize="16" FontStyle="Italic" HorizontalContentAlignment="Center" Content="{x:Static r:Strings.LabelVideoSpeed}" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top"   Margin="140,373,0,0" />
+                <TextBox x:Name="_textboxVideoSpeed"    FontSize="16"     HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,408,0,0"                                                                   
+                        PreviewTextInput="TextboxVideoSpeed_PreviewTextInput"/>
+                <Button x:Name="_buttonCreateVideo"     FontSize="16" Content="{x:Static r:Strings.ButtonContentCreateVideo}"                   Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,408,0,0" 
                         Click="ButtonCreateVideo_Click" />
-                <Button x:Name="_buttonPlayVideo"   FontSize="16" Content="{x:Static r:Strings.ButtonContentPlayVideo}"   Width="200" Height="30"    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,458,0,0" 
+                <Button x:Name="_buttonPlayVideo"       FontSize="16" Content="{x:Static r:Strings.ButtonContentPlayVideo}"                     Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="370,458,0,0" 
                         Click="ButtonPlayVideo_Click" />
             </Grid>
 

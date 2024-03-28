@@ -15,6 +15,7 @@ namespace mikroblog.videos_designer
     public partial class VideosDesignerWindow : Window
     {
         private readonly string VIDEOS_PATH = Path.Combine(fast_quality_check.Util.GetWorkplacePath(), "videos");
+        
 
         private SoundPlayer _soundPlayer = new();
         private readonly System.Timers.Timer _speechTimer = new();
@@ -35,6 +36,8 @@ namespace mikroblog.videos_designer
         private const int SCREENSHOT_RECTANGLE_ARC_RADIUS = 20;
 
         private readonly Brush CANVAS_BACKGROUND_COLOR = new SolidBrush(Color.FromArgb(41, 2, 2));
+
+        private const float VIDEO_SPEED_DEFAULT_VALUE = 1.2F;
 
         /// <summary>
         /// Calls <see cref="CleanScreenshotViewer"/> and runs <see cref="RunScreenshotProcedure"/> on <see cref="_listboxEntries"/>.SelectedItem.
@@ -137,7 +140,14 @@ namespace mikroblog.videos_designer
             StopVideo();
             _videoPlayer.Source = null;
 
-            Console.CreateAndExecuteVideoScript(GetCurrentDiscussionFolder(), VIDEOS_PATH, GetCurrentDiscussionId());
+            var videoSpeed = GetVideoSpeedValue();
+            if (videoSpeed == null)
+            {
+                Log.WriteError($"Invalid video speed");
+                return;
+            }    
+
+            Console.CreateAndExecuteVideoScript(GetCurrentDiscussionFolder(), VIDEOS_PATH, GetCurrentDiscussionId(), (float)videoSpeed);
 
             UpdateControls(ControlUpdateType.Video);
         }

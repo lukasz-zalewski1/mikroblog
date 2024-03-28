@@ -57,6 +57,19 @@ if ($null -eq $discussionId) {
     Exit-Script "Discussion Id wasn't specified"
 }
 
+$videoSpeed = $args[3]
+
+if ($null -eq $videoSpeed) {
+    Exit-Script "Video Speed wasn't specified"
+}
+
+# Checks if $videoSpeed is float
+if (-not ($videoSpeed -match "^[\d\.]+$") -or $videoSpeed -eq 0) {
+    Exit-Script "Incorrect Video Speed"
+}
+
+$videoLength = 1 / $videoSpeed
+
 # Get all files from the video path and check if they are correct
 # The number of .png .wav .txt must match and there has to be exactly the same number of each file type in the folder
 # Entries are counted from 1 upwards, there can't be any mismatch in names
@@ -114,6 +127,7 @@ for ($i = 0; $i -lt $fileGroups.Values.Count; ++$i) {
 # The batch file is needed because there were problems when running merging command from pwsh
 $ffmpegCommandListOfEntries = ""
 $ffmpegCommandFilter = ""
+
 $completeVideoPath = $videosPath + $discussionId + ".mp4"
 $videoMergeScriptPath = $discussionPath + "MergeVideos.bat"
 
@@ -126,9 +140,10 @@ for ($i = 0; $i -lt $entries.Count; ++$i) {
 
 $ffmpegCommandFilter += "concat=n=$($entries.Count):v=1:a=1[v][a]"
 
-$command = "`"$ffmpeg`" -y $ffmpegCommandListOfEntries -filter_complex `"$ffmpegCommandFilter`" -map `"[v]`" -map `"[a]`" `"$completeVideoPath`""
+$command = "`"$ffmpeg`" -y $ffmpegCommandListOfEntries -filter_complex `"$ffmpegCommandFilter`" -map `"[v]`" -map `"[a]`" `"video.mp4`""
+$commandSpeedUp = "`"$ffmpeg`" -i `"video.mp4`" -vf `"setpts=$videoLength*PTS`" -filter:a `"atempo=$videoSpeed`" `"$completeVideoPath`""
 
-Set-Content -Path $videoMergeScriptPath -Value $command
+Set-Content -Path $videoMergeScriptPath -Value ($command + "`n" + $commandSpeedUp)
 & $videoMergeScriptPath
 Remove-Item $videoMergeScriptPath
 

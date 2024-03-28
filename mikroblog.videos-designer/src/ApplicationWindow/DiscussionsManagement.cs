@@ -94,12 +94,7 @@ namespace mikroblog.videos_designer
         /// </summary>
         private void ChangeDiscussion()
         {
-            StopSpeech();
-            StopVideo();
-
-            CleanModesChanges();
-
-            UpdateControls(ControlUpdateType.All);
+            DiscussionChangeProcess();
 
             WebViewOpenCurrentDiscussion();           
         }
@@ -119,17 +114,14 @@ namespace mikroblog.videos_designer
                     _currentDiscussion -= 1;
             }
 
-            StopSpeech();
-            StopVideo();
-
-            CleanModesChanges();
+            DiscussionChangeProcess();
 
             if (string.IsNullOrEmpty(GetCurrentDiscussionId()))
                 NoMoreDiscussions();
             else
                 WebViewOpenCurrentDiscussion();
 
-            UpdateControls(ControlUpdateType.All);
+            
         }
 
         /// <summary>
@@ -138,17 +130,24 @@ namespace mikroblog.videos_designer
         /// </summary>
         private void NoMoreDiscussions()
         {
+            HideButtonsModes();
+            DisplayDesignerControls(false);        
+
+            WebViewOpenEmptyPage();
+        }
+
+        /// <summary>
+        /// Stops played media, cleans any changes done by modes, sets video speed to default value and updates controls.
+        /// </summary>
+        private void DiscussionChangeProcess()
+        {
             StopSpeech();
             StopVideo();
 
-            HideButtonsModes();
-            DisplayDesignerControls(false);
-
             CleanModesChanges();
+            SetVideoSpeedToDefaultValue();
 
             UpdateControls(ControlUpdateType.All);
-
-            WebViewOpenEmptyPage();
         }
 
         /// <summary>

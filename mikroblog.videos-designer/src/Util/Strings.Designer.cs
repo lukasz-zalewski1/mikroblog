@@ -284,5 +284,14 @@ namespace mikroblog.videos_designer {
                 return ResourceManager.GetString("LabelVideoDesigner", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video Speed.
+        /// </summary>
+        public static string LabelVideoSpeed {
+            get {
+                return ResourceManager.GetString("LabelVideoSpeed", resourceCulture);
+            }
+        }
     }
 }

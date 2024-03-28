@@ -35,11 +35,11 @@ namespace mikroblog.videos_designer
         /// <param name="path">Folder with discussion files</param>
         /// <param name="videosPath">Folder where videos are stored</param>
         /// <param name="discussionId">Id of the discussion</param>
-        public static void CreateAndExecuteVideoScript(string path, string videosPath, string discussionId)
+        public static void CreateAndExecuteVideoScript(string path, string videosPath, string discussionId, float videoSpeed)
         {
             try
             {
-                string args = $" -File \"{SCRIPT_PATH}\" \"{path}\" \"{videosPath}\" \"{discussionId}\"";
+                string args = $" -File \"{SCRIPT_PATH}\" \"{path}\" \"{videosPath}\" \"{discussionId}\" {videoSpeed}";
 
                 var process = Process.Start(new ProcessStartInfo("powershell.exe", args));
 

@@ -30,6 +30,7 @@ namespace mikroblog.videos_designer
         private void InitializeControls()
         {
             DisplayDesignerControls(false);
+            SetVideoSpeedToDefaultValue();
 
             UpdateControls(ControlUpdateType.All);
         }
@@ -270,6 +271,26 @@ namespace mikroblog.videos_designer
             _textboxSpeechLength.IsEnabled = false;
             _textboxSpeechLength.Text = string.Empty;
             _buttonPlaySpeech.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// Sets <see cref="_textboxVideoSpeed"/>.Text to <see cref="VIDEO_SPEED_DEFAULT_VALUE"/>.
+        /// </summary>
+        private void SetVideoSpeedToDefaultValue()
+        {
+            _textboxVideoSpeed.Text = VIDEO_SPEED_DEFAULT_VALUE.ToString();
+        }
+
+        /// <summary>
+        /// Gets value of from <see cref="_textboxVideoSpeed"/>.
+        /// </summary>
+        /// <returns>Value of Video Speed or null if invalid</returns>
+        private float? GetVideoSpeedValue()
+        {
+            if (!float.TryParse(_textboxVideoSpeed.Text, out float value))
+                return null;
+
+            return value;
         }
 
         /// <summary>
