@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -8,6 +9,22 @@ namespace mikroblog.videos_designer
 {
     public partial class VideosDesignerWindow : Window
     {
+        private enum SHORTCUT_ACTION
+        {
+            Close,
+            DropDiscussion,
+            TextEditMode,
+            DesignerMode
+        };
+
+        private readonly Dictionary<Key, SHORTCUT_ACTION> SHORTCUTS = new()
+        {
+            { Key.Escape, SHORTCUT_ACTION.Close },
+            { Key.F5, SHORTCUT_ACTION.DropDiscussion },
+            { Key.F1, SHORTCUT_ACTION.TextEditMode },
+            { Key.F2, SHORTCUT_ACTION.DesignerMode }
+        };
+
         /// <summary>
         /// Initializes non-control events.
         /// </summary>
@@ -17,12 +34,34 @@ namespace mikroblog.videos_designer
         }      
 
         /// <summary>
-        /// Closes the application when escape was clicked.
+        /// Handles keyboard keydowns events.
         /// </summary>
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
-                Close();
+            if (!SHORTCUTS.ContainsKey(e.Key))
+                return;
+
+            switch (SHORTCUTS[e.Key])
+            {
+                case SHORTCUT_ACTION.Close: 
+                    Close(); 
+                    break;
+                case SHORTCUT_ACTION.DropDiscussion: 
+                    DropDiscussion(); 
+                    break;
+                case SHORTCUT_ACTION.TextEditMode:
+                    if (_mode != Mode.TextEdit)
+                        EnableTextEditMode();
+                    else
+                        DisableTextEditMode();
+                    break;
+                case SHORTCUT_ACTION.DesignerMode:
+                    if (_mode != Mode.Designer)
+                        EnableDesignerMode();
+                    else
+                        DisableDesignerMode();
+                    break;
+            }            
         }
 
         /// <summary>
