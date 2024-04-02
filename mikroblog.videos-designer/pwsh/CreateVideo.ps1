@@ -14,14 +14,16 @@ function Exit-Script {
 $ErrorActionPreference = 'Stop'
 
 # Get ffmpeg path and test if the file exists
-$ffmpeg = "ffmpeg\ffmpeg.exe"
+# $ffmpeg = "ffmpeg\ffmpeg.exe"
+$ffmpeg = "C:\Users\LZA\OneDrive - FRABA\General\Private\Github\mikroblog\mikroblog.videos-designer\ffmpeg\ffmpeg.exe"
 
 if (-not (Test-Path $ffmpeg)) {
     Exit-Script "FFMPEG was not found in .\ffmpeg\"
 }
 
 # Get video path from args and test if it's correct
-$discussionPath = $args[0]
+# $discussionPath = $args[0]
+$discussionPath = "C:\Users\LZA\Desktop\workplace\discussions\55672571"
 
 if ($null -eq $discussionPath) {
     Exit-Script "Discussion path wasn't specified"
@@ -36,7 +38,8 @@ if ($discussionPath[$discussionPath.Count - 1] -ne "\") {
     $discussionPath += "\"
 }
 
-$videosPath = $args[1]
+#$videosPath = $args[1]
+$videosPath = "C:\Users\LZA\Desktop\workplace\videos"
 
 if ($null -eq $videosPath) {
     Exit-Script "Videos path wasn't specified"
@@ -51,13 +54,15 @@ if ($videosPath[$videosPath.Count - 1] -ne "\") {
     $videosPath += "\"
 }
 
-$discussionId = $args[2]
+# $discussionId = $args[2]
+$discussionId = "55672571"
 
 if ($null -eq $discussionId) {
     Exit-Script "Discussion Id wasn't specified"
 }
 
-$videoSpeed = $args[3]
+#$videoSpeed = $args[3]
+$videoSpeed = "1.1"
 
 if ($null -eq $videoSpeed) {
     Exit-Script "Video Speed wasn't specified"
@@ -85,7 +90,7 @@ if (!(($files | Where-Object {$_.name -like "*.png"}).Count -eq
 
 $fileGroups = ((($files.name -replace ".png","") -replace ".wav","") -replace ".txt","") | Group-Object 
 
-if (($files.Count / $fileGroups.Count) -ne 3 -or $files.Count % 3 -ne 0) {
+if ($files.Count -ne 3 -and ($files.Count / $fileGroups.Count) -ne 3 -or $files.Count % 3 -ne 0) {
     Exit-Script "Incorrect filenames"
 }
 
@@ -141,7 +146,7 @@ for ($i = 0; $i -lt $entries.Count; ++$i) {
 $ffmpegCommandFilter += "concat=n=$($entries.Count):v=1:a=1[v][a]"
 
 $command = "`"$ffmpeg`" -y $ffmpegCommandListOfEntries -filter_complex `"$ffmpegCommandFilter`" -map `"[v]`" -map `"[a]`" `"video.mp4`""
-$commandSpeedUp = "`"$ffmpeg`" -i `"video.mp4`" -vf `"setpts=$videoLength*PTS`" -filter:a `"atempo=$videoSpeed`" `"$completeVideoPath`""
+$commandSpeedUp = "`"$ffmpeg`" -y -i `"video.mp4`" -vf `"setpts=$videoLength*PTS`" -filter:a `"atempo=$videoSpeed`" `"$completeVideoPath`""
 
 Set-Content -Path $videoMergeScriptPath -Value ($command + "`n" + $commandSpeedUp)
 & $videoMergeScriptPath
