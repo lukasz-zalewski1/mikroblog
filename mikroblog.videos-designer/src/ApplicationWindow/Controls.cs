@@ -109,12 +109,6 @@ namespace mikroblog.videos_designer
                     return;
                 }
 
-                if (!Directory.Exists(GetCurrentDiscussionFolder()))
-                {
-                    _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
-                    return;
-                }
-
                 if (Directory.GetFiles(GetCurrentDiscussionFolder()).Length <= 0)
                 {
                     _gridRemoveDiscussionFiles.Visibility = Visibility.Hidden;
