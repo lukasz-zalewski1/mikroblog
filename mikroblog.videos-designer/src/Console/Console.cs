@@ -3,10 +3,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-// TODO
-// Pwsh script doesn't work when there is only one entry - fix
-// Don't create discussion folder until entries are needed
-
 namespace mikroblog.videos_designer
 {
     internal partial class Console

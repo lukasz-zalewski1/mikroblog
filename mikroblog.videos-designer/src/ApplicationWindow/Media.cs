@@ -37,7 +37,7 @@ namespace mikroblog.videos_designer
 
         private readonly Brush CANVAS_BACKGROUND_COLOR = new SolidBrush(Color.FromArgb(41, 2, 2));
 
-        private const float VIDEO_SPEED_DEFAULT_VALUE = 1.2F;
+        private const float VIDEO_SPEED_DEFAULT_VALUE = 1.1F;
 
         /// <summary>
         /// Calls <see cref="CleanScreenshotViewer"/> and runs <see cref="RunScreenshotProcedure"/> on <see cref="_listboxEntries"/>.SelectedItem.
