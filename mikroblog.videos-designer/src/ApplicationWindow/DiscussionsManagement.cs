@@ -110,6 +110,15 @@ namespace mikroblog.videos_designer
             {
                 _configQualityDiscussions.Remove(currentDiscussionId);
 
+                try
+                {
+                    Directory.Delete(GetCurrentDiscussionFolder());
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteError($"Couldn't remove discussion directory when droping discussion, Exception - {ex.Message}");
+                }
+
                 if (_currentDiscussion >= DiscussionsCount)
                     _currentDiscussion -= 1;
             }
@@ -119,9 +128,7 @@ namespace mikroblog.videos_designer
             if (string.IsNullOrEmpty(GetCurrentDiscussionId()))
                 NoMoreDiscussions();
             else
-                WebViewOpenCurrentDiscussion();
-
-            
+                WebViewOpenCurrentDiscussion();           
         }
 
         /// <summary>
@@ -155,14 +162,9 @@ namespace mikroblog.videos_designer
         /// </summary>
         private void RemoveDiscussionFiles()
         {
-            var path = GetCurrentDiscussionFolder();
-
-            if (!Directory.Exists(path))
-                return;
-
             try
             {
-                Directory.Delete(path, true);
+                Directory.Delete(GetCurrentDiscussionFolder(), true);
             }
             catch (Exception ex)
             {
